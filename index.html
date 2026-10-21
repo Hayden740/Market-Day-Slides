@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Market Day Lessons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Projector-first 16:9 stage. Seaford 2025 palette; each week keeps one colour everywhere. */
+:root{
+  --bg:#eef2f3; --surface:#fcfdfd; --ink:#0e2533; --muted:#536673; --line:#ccd8dd;
+  --teal:#013148; --w1:#d24c42; --w2:#2f8a5a; --w3:#1f739c; --w4:#c43f66;
+  --w1t:#F46E63; --w2t:#7AC698; --w3t:#7cc7ea; --w4t:#F38C9F; --lime:#BDD675;
+  --accent:var(--teal); --accent-ink:#fff; --good:#2f7d3a; --bad:#b3372f;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#081822; --surface:#0f2330; --ink:#e3eef3; --muted:#9db3bf; --line:#24404f;
+  --teal:#8fd0ef; --w1:#ff8a7f; --w2:#86d4a6; --w3:#8fd0ef; --w4:#f7a0b6;
+  --accent:#8fd0ef; --accent-ink:#081822; --good:#7fcf86; --bad:#f08a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#081822; --surface:#0f2330; --ink:#e3eef3; --muted:#9db3bf; --line:#24404f;
+  --teal:#8fd0ef; --w1:#ff8a7f; --w2:#86d4a6; --w3:#8fd0ef; --w4:#f7a0b6;
+  --accent:#8fd0ef; --accent-ink:#081822; --good:#7fcf86; --bad:#f08a80; color-scheme:dark}
+
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.app{display:flex;flex-direction:column;height:100%;padding-inline:16px}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:18px;letter-spacing:-.01em;background:none;border:0;padding:0;display:flex;align-items:center;gap:8px}
+.brand .dots{display:inline-flex;gap:3px}
+.brand .dots i{width:9px;height:9px;border-radius:50%;display:block}
+.lessons{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.wkgrp{display:flex;gap:4px;align-items:center}
+.wkgrp b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.lessons button{border:1px solid var(--line);background:var(--surface);border-radius:999px;min-width:32px;padding:4px 9px;font-size:14px;font-weight:700}
+.lessons button[aria-current="true"]{background:var(--wc);color:#fff;border-color:var(--wc)}
+
+/* stage */
+.stageWrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.stage{width:min(100%, calc((100dvh - 130px) * 16 / 9));aspect-ratio:16/9;max-width:100%;container-type:inline-size;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;padding:3cqw 4cqw 2.6cqw;display:flex;flex-direction:column;gap:1.15cqw;overflow:auto;font-size:1.85cqw}
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:.7cqw;background:var(--wc,var(--teal))}
+.eyebrow{display:flex;align-items:center;gap:1cqw;font-size:1.25cqw;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.mode{display:inline-flex;align-items:center;gap:.6cqw;padding:.35cqw 1cqw;border-radius:999px;background:var(--ink);color:var(--bg);letter-spacing:.06em}
+.mode::before{content:"";width:.8cqw;height:.8cqw;border-radius:50%;background:var(--mc,var(--wc))}
+.slide h2{font-family:var(--f-display);font-weight:800;font-size:3.4cqw;line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.slide h3{font-family:var(--f-display);font-weight:600;font-size:2cqw;margin:0;line-height:1.15}
+.slide p{margin:0;max-width:64ch}
+.slide ul,.slide ol{margin:0;padding-left:1.3em;display:grid;gap:.45cqw}
+.lead{font-size:2.3cqw;line-height:1.3}
+.small{font-size:1.35cqw;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5cqw}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3cqw}
+.grid2>*,.grid3>*,.grid4>*{min-width:0}
+.box{border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1.5cqw;display:flex;flex-direction:column;gap:.6cqw;background:var(--surface)}
+.tint{background:color-mix(in srgb,var(--wc) 9%,var(--surface));border-color:color-mix(in srgb,var(--wc) 40%,var(--line))}
+.key{font-weight:700;color:var(--wc)}
+.def{border-left:.5cqw solid var(--wc);padding:.5cqw 0 .5cqw 1.4cqw;font-size:2.15cqw;line-height:1.3;max-width:60ch}
+.chip{display:inline-block;padding:.3cqw 1.1cqw;border-radius:999px;font-weight:700;font-size:1.6cqw;background:color-mix(in srgb,var(--wc) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--wc) 50%,var(--line));color:var(--ink)}
+.row{display:flex;gap:1cqw;flex-wrap:wrap;align-items:center}
+.fill{flex:1;min-height:0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:.8cqw;padding:.6cqw 1.3cqw;font-size:1.45cqw;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.big{font-family:var(--f-display);font-weight:800;font-size:3cqw;line-height:1;color:var(--wc)}
+.formula{font-family:var(--f-mono);font-weight:700;font-size:1.8cqw;padding:.8cqw 1.2cqw;border-radius:.8cqw;background:color-mix(in srgb,var(--wc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--wc) 40%,var(--line))}
+.arrow{display:flex;align-items:center;justify-content:center;font-size:2.6cqw;color:var(--wc);font-weight:800}
+.fn{border-left:.4cqw solid var(--lime);padding-left:1cqw}
+
+/* intro slide */
+.intro{justify-content:center;gap:2cqw;background:
+  radial-gradient(circle at 90% 20%, color-mix(in srgb,var(--wc) 22%,transparent) 0 9cqw, transparent 9.1cqw),
+  radial-gradient(circle at 82% 72%, color-mix(in srgb,var(--lime) 30%,transparent) 0 10cqw, transparent 10.1cqw),
+  radial-gradient(circle at 70% 36%, color-mix(in srgb,var(--w3t) 22%,transparent) 0 6cqw, transparent 6.1cqw),
+  var(--surface)}
+.intro .num{font-family:var(--f-mono);font-weight:700;font-size:1.5cqw;color:var(--wc);letter-spacing:.04em}
+.intro h1{font-family:var(--f-display);font-weight:800;font-size:5.6cqw;line-height:.98;letter-spacing:-.03em;margin:0;max-width:15ch;text-wrap:balance}
+.intro .q{font-size:2.4cqw;max-width:40ch;line-height:1.25}
+.intro .q b{color:var(--wc)}
+
+/* reveal cards */
+.reveal{border:1px dashed var(--line);border-radius:1cqw;padding:.85cqw 1.2cqw;background:var(--surface);text-align:left;display:flex;flex-direction:column;gap:.35cqw;font-size:1.65cqw;line-height:1.3}
+.reveal .q{font-weight:700}
+.reveal .a{display:none}
+.reveal .hint{font-size:1.15cqw;color:var(--muted)}
+.reveal.open{border-style:solid;border-color:var(--wc);background:color-mix(in srgb,var(--wc) 7%,var(--surface))}
+.reveal.open .a{display:block}
+.reveal.open .hint{display:none}
+
+/* video */
+.vgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:2cqw;align-items:start}
+.vgrid>*{min-width:0}
+.vid{aspect-ratio:16/9;width:100%;border-radius:1cqw;overflow:hidden;background:#000;border:1px solid var(--line)}
+.vid iframe{width:100%;height:100%;border:0;display:block}
+.vidlink{aspect-ratio:16/9;width:100%;border-radius:1cqw;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1cqw;text-decoration:none;color:var(--ink);
+  background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--wc) 10%,var(--surface)) 0 1.2cqw,var(--surface) 1.2cqw 2.4cqw)}
+.vidlink .play{width:7cqw;height:7cqw;border-radius:50%;background:#d22;display:grid;place-items:center}
+.vidlink .play::after{content:"";border-left:2.4cqw solid #fff;border-top:1.5cqw solid transparent;border-bottom:1.5cqw solid transparent;margin-left:.6cqw}
+.vidlink b{font-family:var(--f-display);font-size:2cqw;text-align:center;padding-inline:2cqw}
+.vidlink span{font-size:1.3cqw;color:var(--muted)}
+.ytlink{font-size:1.2cqw;color:var(--muted)}
+.ytlink a{color:inherit}
+
+/* booklet hand-off strip */
+.booklet{margin-top:auto;flex-shrink:0;display:flex;align-items:center;gap:1.2cqw;padding:.7cqw 1.4cqw;border-radius:1cqw;background:var(--teal);color:#fff;font-size:1.55cqw}
+:root[data-theme="dark"] .booklet{color:#081822}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .booklet{color:#081822}}
+.booklet b{font-family:var(--f-display);font-size:1.9cqw}
+.booklet .pg{margin-left:auto;display:flex;gap:.6cqw}
+.booklet .pg span{border:1px solid currentColor;border-radius:999px;padding:.15cqw .9cqw;font-size:1.25cqw;opacity:.9}
+
+/* tables + charts */
+table.t{border-collapse:collapse;width:100%;font-size:1.55cqw}
+table.t th,table.t td{border:1px solid var(--line);padding:.55cqw .9cqw;text-align:left}
+table.t th{background:color-mix(in srgb,var(--wc) 14%,var(--surface))}
+table.t td.n{text-align:center;font-family:var(--f-mono)}
+.win td{background:color-mix(in srgb,var(--good) 14%,var(--surface));font-weight:700}
+svg text{fill:var(--ink);font-family:var(--f-body)}
+.flow{display:flex;align-items:stretch;gap:.6cqw}
+.flow .st{flex:1;border:1px solid color-mix(in srgb,var(--wc) 45%,var(--line));background:color-mix(in srgb,var(--wc) 9%,var(--surface));border-radius:.9cqw;padding:.9cqw;font-size:1.45cqw;display:flex;flex-direction:column;gap:.3cqw}
+.flow .st b{font-family:var(--f-display);font-size:1.6cqw}
+.flow .ar{align-self:center;color:var(--wc);font-weight:800;font-size:2cqw}
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2cqw;position:relative}
+.tl .yr{font-family:var(--f-mono);font-weight:700;color:var(--wc);font-size:1.8cqw}
+
+/* calculator */
+.calc label{display:flex;flex-direction:column;gap:.3cqw;font-size:1.5cqw;font-weight:700}
+.calc input[type=range]{width:100%;accent-color:var(--wc)}
+.readout{font-family:var(--f-mono);font-weight:700;font-size:2.4cqw}
+.readout small{display:block;font-family:var(--f-body);font-weight:400;font-size:1.2cqw;color:var(--muted)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+/* poster mock */
+.poster{border-radius:1cqw;padding:1.2cqw;font-size:1.5cqw;background:linear-gradient(160deg,#F38C9F,#F46E63);color:#fff;display:flex;flex-direction:column;gap:.5cqw;text-align:center;align-items:center}
+.poster .pt{font-family:var(--f-display);font-weight:800;font-size:3cqw;line-height:1}
+.poster .pp{font-family:var(--f-display);font-weight:800;font-size:2.4cqw;background:#fff;color:#c43f66;border-radius:999px;padding:.2cqw 1.4cqw}
+
+/* home */
+.home{gap:1.4cqw}
+.home h1{font-family:var(--f-display);font-weight:800;font-size:4.4cqw;margin:0;letter-spacing:-.03em;line-height:1}
+.wkcol{display:flex;flex-direction:column;gap:.6cqw}
+.wkcol h3{color:var(--wc);font-size:1.7cqw}
+.lbtn{border:1px solid color-mix(in srgb,var(--wc) 40%,var(--line));background:color-mix(in srgb,var(--wc) 7%,var(--surface));border-radius:.8cqw;padding:.7cqw 1cqw;text-align:left;font-size:1.4cqw;display:flex;gap:.8cqw;align-items:baseline}
+.lbtn i{font-style:normal;font-family:var(--f-mono);font-weight:700;color:var(--wc)}
+
+/* controls */
+.ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px}
+.ctrl button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 14px;font-weight:700}
+.ctrl button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.count{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+.prog{flex:1;min-width:60px;height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--wc,var(--teal));width:0}
+.hint{font-size:13px;color:var(--muted)}
+.notes{position:fixed;right:16px;bottom:64px;width:min(440px,calc(100% - 32px));max-height:55%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.18);z-index:10;font-size:15px}
+.notes h4{margin:0 0 6px;font-family:var(--f-display);font-size:16px}
+.notes p{margin:0 0 6px}
+
+@media (max-width:700px){
+  .hint{display:none}
+  .lessons{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="brand" id="homeBtn" aria-label="Unit home"><span class="dots"><i style="background:#F46E63"></i><i style="background:#7AC698"></i><i style="background:#7cc7ea"></i><i style="background:#F38C9F"></i></span>Trade, Enterprise and Market Day</button>
+    <nav class="lessons" id="lessonNav" aria-label="Weeks and lessons"></nav>
+  </header>
+  <main class="stageWrap"><div class="stage" id="stage" aria-live="polite"></div></main>
+  <footer class="ctrl">
+    <button id="prev" aria-label="Previous slide">&larr; Back</button>
+    <button id="next" aria-label="Next slide">Next &rarr;</button>
+    <span class="count" id="count"></span>
+    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+    <button id="notesBtn" aria-pressed="false">Teacher notes</button>
+    <button id="fsBtn">Full screen</button>
+    <span class="hint">Keys: &larr; &rarr; slides, N notes, F full screen</span>
+  </footer>
+</div>
+<aside class="notes" id="notes" hidden></aside>
+<script>
+/* ===================================================================
+   VIDEOS: one per lesson. To swap a video, change the id (the bit
+   after watch?v= in a YouTube link). start is optional, in seconds.
+   =================================================================== */
+const VIDEOS = {
+  1:{id:"MwjIerN8Urk", title:"Imports and Exports Explained for Kids", src:"Money Starters"},
+  2:{id:"v3Ec98E6CtM", title:"What is Specialisation?", src:"tutor2u"},
+  3:{id:"oCDV7xB6oBg", title:"How Australia and China's trade relationship broke down", src:"CNBC Explains"},
+  4:{id:"lp1zIvc5oaY", title:"China imposes heavy tariffs on Australian wine", src:"WION (Nov 2020)"},
+  5:{id:"2bc4rwjdfNg", title:"Supply and Demand Explained: How Prices Are Set", src:"Joe Blogs"},
+  6:{id:"Kdnto-ruNmE", title:"What is Competitive Advantage?", src:"Shaf Rasul"},
+  7:{id:"7Spi9AbRoFg", title:"Calculating Profit from Costs and Revenue", src:"Mr Gauvain"},
+  8:{id:"zaOYxctwE-o", title:"Kids Running Their Own Business", src:"BTN (Behind the News)"},
+  9:{id:"ie2Q1srSpk0", title:"13-Year-Old 'Glossy Boys' Entrepreneur Impresses The Sharks", src:"Shark Tank Australia"},
+  10:{id:"FtGjuAGbuuA", title:"What Is A Target Market?", src:"Solve It Like A Marketer"},
+  11:{id:"26zoJvSoS9k", title:"From Cotton Field to Retail Garment: how a T-shirt is made", src:"It's Cole"},
+  12:{id:"B2C5Dj-ux0g", title:"Ten Common Pricing Strategies: A 4-Minute Overview", src:"The Business Learning Hub"},
+  13:{id:"sO4te2QNsHY", title:"What Is Branding? 4 Minute Crash Course", src:"The Futur"},
+  14:{id:"AgciEgVRss4", title:"Writing a Business Plan (short animation, no talking)", src:"Young Entrepreneurs Forum"},
+  15:{id:"FD4zDsjAHnM", title:"A 15-Year-Old Kidpreneur Negotiates a Deal", src:"Shark Tank (ABC US)"},
+  16:{id:"aDt6cukCz7k", title:"Elevator Pitch Examples for Students", src:"Home at 30"}
+};
+
+/* ---------- helpers ---------- */
+const WEEKS = {1:"Trade and interdependence",2:"Markets and business",3:"Planning our business",4:"Brand, plan and pitch"};
+function $(s){return document.querySelector(s)}
+const ytURL = v => `https://www.youtube.com/watch?v=${v.id}${v.start?`&t=${v.start}s`:""}`;
+function player(v){
+  const local = location.protocol==="file:";
+  return local
+    ? `<a class="vidlink" href="${ytURL(v)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><b>${v.title}</b><span>${v.src} &middot; opens on YouTube</span></a>`
+    : `<div class="vid"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0${v.start?`&start=${v.start}`:""}" title="${v.title}" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+       <p class="ytlink">Video not playing? <a href="${ytURL(v)}" target="_blank" rel="noopener">Open it on YouTube</a></p>`;
+}
+const rv = (q,a,hint="Click to reveal") => `<button class="reveal" data-reveal><span class="q">${q}</span><span class="a">${a}</span><span class="hint">${hint}</span></button>`;
+const box = (h,body,cls="") => `<div class="box ${cls}">${h?`<h3>${h}</h3>`:""}${body}</div>`;
+const chips = arr => `<div class="row">${arr.map(k=>`<span class="chip">${k}</span>`).join("")}</div>`;
+const flow = arr => `<div class="flow">${arr.map((s,i)=>`${i?'<span class="ar" aria-hidden="true">&rarr;</span>':""}<div class="st"><b>${s[0]}</b>${s[1]?`<span>${s[1]}</span>`:""}</div>`).join("")}</div>`;
+function bars(cats, vals, o={}){
+  const W=560,H=o.h||250,P={l:40,r:10,t:22,b:42},max=o.max||Math.max(...vals)*1.12,bw=(W-P.l-P.r)/cats.length;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${o.label||"Bar chart"}">`;
+  for(let i=0;i<=4;i++){const y=P.t+(H-P.t-P.b)*(1-i/4);s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${P.l-6}" y="${y+4}" text-anchor="end" font-size="11">${Math.round(max*i/4)}</text>`}
+  vals.forEach((v,i)=>{const h=(H-P.t-P.b)*v/max,x=P.l+i*bw+bw*.18,y=H-P.b-h,col=(o.colours&&o.colours[i])||"var(--wc)";
+    s+=`<rect x="${x}" y="${y}" width="${bw*.64}" height="${h}" rx="4" fill="${col}"/><text x="${x+bw*.32}" y="${y-6}" text-anchor="middle" font-size="12" font-weight="700">${o.fmt?o.fmt(v):v}</text><text x="${x+bw*.32}" y="${H-P.b+16}" text-anchor="middle" font-size="12">${cats[i]}</text>`});
+  if(o.axis)s+=`<text x="${P.l}" y="12" font-size="11">${o.axis}</text>`;
+  return s+"</svg>";
+}
+const booklet = n => `<div class="booklet"><b>Over to your booklet</b><span>Lesson ${n}</span><div class="pg"><span>Reading</span><span>Questions</span><span>Research</span><span>Puzzles</span></div></div>`;
+
+/* ===================================================================
+   LESSONS. Each lesson = intro, explain, watch, example.
+   =================================================================== */
+const L = [];
+
+/* ---------- Week 1 ---------- */
+L.push({n:1,w:1,title:"What is trade?",focus:"Why do people, businesses and countries trade?",
+ keys:["trade","goods","services","imports","exports"],
+ explain:{h:"Trade is everywhere",html:`
+  <p class="def"><b>Trade</b> is the exchange of <b>goods</b> and <b>services</b> between people, businesses or countries.</p>
+  <div class="grid3">
+   ${box("Goods or services?",`<p><span class="key">Goods</span> are things you can touch: jeans, apples, a phone.</p><p><span class="key">Services</span> are things done for you: a haircut, a bus trip, a music stream.</p>`,"tint")}
+   ${box("Three levels of trade",`<ul><li><b>Local:</b> strawberries at the Willunga Farmers Market</li><li><b>National:</b> Queensland bananas in Adelaide</li><li><b>International:</b> between countries</li></ul>`,"tint")}
+   ${box("In and out",`<p><span class="key">Imports</span> are bought <b>from</b> other countries (cars, phones, medicines).</p><p><span class="key">Exports</span> are sold <b>to</b> other countries (iron ore, wine, beef).</p>`,"tint")}
+  </div>
+  ${box("Why trade matters",`<div class="row"><span class="chip">More choice</span><span class="chip">Lower prices</span><span class="chip">More jobs</span></div>`)}`,
+  notes:"Students don't copy anything. Keep this fast: point at each box and give one extra local example from the room (school shoes, the canteen, Spotify)."},
+ watch:["What is the difference between an import and an export?","Why can't one country make everything it wants?","Name one thing you own that was probably imported."],
+ watchNote:"Pitched a bit young, but short and clear. Use it as a quick reset of the three key words.",
+ example:{h:"Example: trace your morning",html:`
+  <p>Everything below reached you through trade. For each one: <b>good or service?</b> and <b>local, national or international?</b></p>
+  <div class="grid4">
+   ${rv("&#129379; Cereal made from SA wheat","Good. National or local trade: grown and sold in Australia.")}
+   ${rv("&#128241; Phone assembled in China","Good. International trade: an <b>import</b>.")}
+   ${rv("&#128095; Sneakers made in Vietnam","Good. International trade: an <b>import</b>.")}
+   ${rv("&#127925; Streaming a song","Service. Often international: the company may be overseas.")}
+  </div>
+  ${box("Trade is not new here",`<p>Red ochre from the <b>Bookartoo</b> mine near Parachilna, on <b>Adnyamathanha Country</b>, was carried hundreds of kilometres along Aboriginal trade networks and swapped for goods like pituri and stone tools.</p>`,"fn")}
+  ${booklet(1)}`,
+  notes:"Cold call a student per card before revealing. The ochre trade appears in the reading and in Question 8, so give it a moment."}
+});
+
+L.push({n:2,w:1,title:"Why can't one country make everything?",focus:"Why do countries rely on one another?",
+ keys:["resources","climate","skills","specialisation","interdependence"],
+ explain:{h:"Countries are dealt different cards",html:`
+  <div class="grid3">
+   ${box("&#9935;&#65039; Resources",`<p>Things used to make goods. Australia has huge amounts of <b>iron ore</b>, coal, gas and gold. Other countries have farmland or fresh water instead.</p>`,"tint")}
+   ${box("&#9728;&#65039; Climate",`<p>The usual weather over a long time. Bananas need the tropics. Wine grapes love the <b>Barossa</b> and <b>Coonawarra</b>.</p>`,"tint")}
+   ${box("&#128295; Skills and technology",`<p>What workers know and what factories can do. Building a chip or car industry takes years and billions of dollars.</p>`,"tint")}
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="grid2">
+   <p class="def"><b>Specialisation:</b> focus on what you are best at, then trade for the rest.</p>
+   <p class="def"><b>Interdependence:</b> people, businesses and countries relying on each other.</p>
+  </div>`,
+  notes:"The arrow is the big idea: different starting points lead to specialisation, and specialisation leads to interdependence."},
+ watch:["What does specialisation mean?","Give one example of specialisation from the video.","Why does specialisation make people trade?"],
+ watchNote:"tutor2u, about 4 minutes. Slightly economics-heavy; pause once halfway to check the definition has landed.",
+ example:{h:"Example: Australia's trade deal with the world",html:`
+  <div class="grid2">
+   ${box("We specialise in and sell&hellip;",`<ul><li>Minerals and energy (iron ore, coal, gas)</li><li>Farm products (wheat, beef, wine)</li><li>Education (international students)</li></ul>`,"tint")}
+   ${box("So we buy&hellip;",`<ul><li>Cars</li><li>Phones and computers</li><li>Lots of clothing and medicines</li></ul>`,"tint")}
+  </div>
+  <p class="lead">What would happen if trade suddenly stopped?</p>
+  <div class="grid3">
+   ${rv("In the shops","Shortages of phones, cars, clothes and medicines.")}
+   ${rv("For farmers and miners","They lose most of their customers, so many workers could lose their jobs.")}
+   ${rv("For prices","Scarce goods get expensive very quickly.")}
+  </div>
+  ${booklet(2)}`,
+  notes:"Ask for predictions before each reveal. This sets up Question 8 in the booklet."}
+});
+
+L.push({n:3,w:1,title:"Australia in the global market",focus:"What does Australia trade, and who with?",
+ keys:["trading partner","commodities","Asia","free trade agreement","tariff"],
+ explain:{h:"Australia is a trading nation",html:`
+  <div class="grid2">
+   ${box("Commodities",`<p>Raw or partly processed materials sold in bulk: <b>iron ore, coal, gas, gold, wheat, beef</b>. These are our biggest exports.</p>`,"tint")}
+   ${box("Services count too",`<p>When an international student pays uni fees here, or a tourist pays for a hotel, Australia earns <b>export</b> income.</p>`,"tint")}
+  </div>
+  <p class="def">A <b>trading partner</b> is a country that regularly buys from or sells to Australia.</p>
+  <div class="grid2">
+   ${box("Tariff",`<p>A <b>tax</b> on imported goods. It makes them dearer to buy.</p>`)}
+   ${box("Free trade agreement",`<p>A deal between countries to <b>cut tariffs</b>, so their goods are cheaper for each other's customers.</p>`)}
+  </div>`,
+  notes:"Australia has free trade agreements with China, Japan, South Korea and Indonesia, among others."},
+ watch:["Who is Australia's biggest trading partner?","What does Australia mostly sell to China?","What went wrong in the relationship, and who was affected?"],
+ watchNote:"CNBC, 2021. It sets up the wine story in Lesson 4. Stop at about 4 minutes if it runs long.",
+ example:{h:"Example: who buys from Australia?",html:`
+  <div class="grid2 fill" style="grid-template-columns:1.3fr 1fr">
+   <div class="box">${bars(["China","Japan","USA","S. Korea","India"],[195.6,65.1,59.9,44.2,32.2],{axis:"$ billion",fmt:v=>"$"+v,colours:["var(--wc)","var(--wc)","var(--muted)","var(--wc)","var(--wc)"],label:"Australia's top five export markets 2025"})}
+    <p class="small">Top 5 export markets, goods and services, 2025. Source: ABS. Coloured bars are in Asia.</p></div>
+   <div style="display:flex;flex-direction:column;gap:1cqw">
+    ${rv("How many of the top 5 are in Asia?","Four. Only the USA is not.")}
+    ${rv("About how much bigger is China than Japan?","Roughly <b>3 times</b> ($195.6b vs $65.1b).")}
+    ${rv("Why could this be risky?","If one huge customer stops buying, whole industries get hurt. That's next lesson.")}
+   </div>
+  </div>
+  ${booklet(3)}`,
+  notes:"Same data the students graph on their Research page, so they've seen it once already."}
+});
+
+L.push({n:4,w:1,title:"Trade with Asia and South Australia",focus:"How is South Australia connected to global trade?",
+ keys:["global economy","export market","wine","seafood","trepang"],
+ explain:{h:"South Australia sells to the world",html:`
+  <p class="def">The <b>global economy</b> is the network of trade, money and businesses linking countries. An <b>export market</b> is a country where a business sells its products.</p>
+  <div class="grid4">
+   ${box("&#127815; Wine",`<p>Barossa, McLaren Vale, Clare Valley, Coonawarra.</p>`,"tint")}
+   ${box("&#128031; Tuna",`<p>Southern bluefin from <b>Port Lincoln</b>, mostly sold to Japan for sashimi.</p>`,"tint")}
+   ${box("&#9937;&#65039; Copper",`<p>From Olympic Dam.</p>`,"tint")}
+   ${box("&#127891; Services",`<p>International students and tourists to Kangaroo Island and the Barossa.</p>`,"tint")}
+  </div>
+  ${box("Why exports matter here",`<p>SA has <b>fewer than 2 million</b> people. Selling overseas lets businesses reach millions more customers, earn more and employ more South Australians.</p>`)}`,
+  notes:"Ask who has family working in wine, fishing or at a uni. Local connections stick."},
+ watch:["How big were China's tariffs on Australian wine?","Why would a tariff stop Chinese customers buying our wine?","Who in South Australia would feel this?"],
+ watchNote:"Short news report from November 2020. If you'd like a First Nations angle instead, search YouTube for Makassan trepang trade.",
+ example:{h:"Example: South Australian wine and China",html:`
+  <div class="tl">
+   ${box(`<span class="yr">Before 2020</span>`,`<p>China is our most valuable wine market.</p>`,"tint")}
+   ${box(`<span class="yr">2020</span>`,`<p>China puts tariffs of over 200% on our wine. Sales almost vanish.</p>`,"tint")}
+   ${box(`<span class="yr">2020 to 2023</span>`,`<p>SA winemakers hunt for new customers elsewhere.</p>`,"tint")}
+   ${box(`<span class="yr">2024</span>`,`<p>Tariffs removed. Sales start to recover.</p>`,"tint")}
+  </div>
+  <div class="grid2">
+   ${rv("What does this show about relying on one big customer?","It's a <b>risk</b>. Interdependence brings rewards, but problems in one country hit people here.")}
+   ${box("Trade with Asia is old",`<p>From the 1700s until 1907, <b>Makassan</b> fleets sailed to Arnhem Land for <b>trepang</b> (sea cucumber) to sell to China. <b>Yolŋu</b> people traded and worked with the crews.</p>`,"fn")}
+  </div>
+  ${booklet(4)}`,
+  notes:"Barley growers had the same experience. The tariffs on wine were removed in 2024."}
+});
+
+/* ---------- Week 2 ---------- */
+L.push({n:5,w:2,title:"Consumers, producers and markets",focus:"How do markets connect buyers and sellers?",
+ keys:["market","consumer","producer","demand","target market"],
+ explain:{h:"Buyers meet sellers",html:`
+  <p class="def">A <b>market</b> is any place or system where buyers and sellers exchange goods and services.</p>
+  <div class="grid3">
+   ${box("Consumers",`<p>The <b>buyers</b>. They use goods and services to meet their needs and wants.</p>`,"tint")}
+   ${box("Producers",`<p>The <b>sellers</b>. They make goods or provide services. Most people are both!</p>`,"tint")}
+   ${box("Markets",`<p><b>Physical:</b> Adelaide Central Market, the canteen.<br><b>Online:</b> an app store, a second-hand clothes site.</p>`,"tint")}
+  </div>
+  <div class="grid2">
+   ${box("Demand",`<p>How much of a product consumers are <b>willing and able</b> to buy at a price. High demand: prices can rise. Falling demand: prices usually drop.</p>`)}
+   ${box("Target market",`<p>The specific group of customers a business aims to sell to. Skateboards and reading glasses have very different ones.</p>`)}
+  </div>`,
+  notes:"Quick check: a student with a weekend job at a bakery. Producer or consumer? (Both.)"},
+ watch:["What happens to price when lots of people want something?","What happens when there's too much of something?","Think of something at school that sells out fast. Why?"],
+ watchNote:"Uses supply and demand curves, a step past the booklet. Focus students on the two big ideas only: lots of buyers push prices up, too much stock pushes prices down.",
+ example:{h:"Example: the school canteen is a market",html:`
+  <div class="grid2">
+   ${rv("The canteen doubles the price of cookies from $2 to $4. What happens?","Demand falls. Fewer students buy, so the canteen may sell fewer cookies overall.")}
+   ${rv("A stall sells glow-in-the-dark keyrings and everyone wants one. What happens?","They sell out fast. The stall could make more, or even charge a bit more.")}
+  </div>
+  ${box("Year 9s as a target market",`<p>Teenagers often spend on <b>snacks, phone accessories, stationery, clothing, gifts</b> and things that show their interests. They value <span class="key">fun</span>, <span class="key">affordability</span> and <span class="key">personal style</span>.</p><p class="small">In a few weeks <b>you</b> are the producers, selling to this exact market.</p>`,"tint")}
+  ${booklet(5)}`,
+  notes:"Hint at the market day here. Students start thinking about what Year 9s actually buy."}
+});
+
+L.push({n:6,w:2,title:"What makes a business successful?",focus:"How do businesses compete for customers?",
+ keys:["competition","competitive advantage","innovation","branding","sustainability"],
+ explain:{h:"Six ways to win customers",html:`
+  <p class="def"><b>Competition</b> is rivalry between businesses selling similar things to the same customers. A <b>competitive advantage</b> is what makes customers choose <b>you</b>.</p>
+  <div class="grid3">
+   ${box("&#128178; Price",`<p>Cheaper wins value hunters. Discount supermarkets stock fewer brands to keep prices low.</p>`,"tint")}
+   ${box("&#11088; Quality",`<p>Haigh's Chocolates (Adelaide, since 1915) built its name on quality, not low prices.</p>`,"tint")}
+   ${box("&#9201;&#65039; Convenience",`<p>Saves time or effort: fast delivery, long hours, a handy location.</p>`,"tint")}
+   ${box("&#128161; Innovation",`<p>Something new, or a better way of doing things.</p>`,"tint")}
+   ${box("&#127991;&#65039; Branding",`<p>The name, logo, colours and personality customers recognise and trust.</p>`,"tint")}
+   ${box("&#9851;&#65039; Sustainability",`<p>Recycled materials, less plastic, workers paid fairly.</p>`,"tint")}
+  </div>`,
+  notes:"Advantage doesn't last forever: rivals copy good ideas, so businesses keep improving."},
+ watch:["How does the video define competitive advantage?","Which sports example did it use, and why?","Which of our six ways appeared in the video?"],
+ watchNote:"About 4 minutes, animated.",
+ example:{h:"Example: name the advantage",html:`
+  <div class="grid4">
+   ${rv("A servo that is open 24 hours","<b>Convenience</b>")}
+   ${rv("Drink bottles made from recycled ocean plastic","<b>Sustainability</b>")}
+   ${rv("A phone stand that folds down to keyring size","<b>Innovation</b>")}
+   ${rv("Chocolate that costs more but tastes amazing","<b>Quality</b>")}
+  </div>
+  ${box("How does a little caf&eacute; beat a big chain?",`${rv("It can't match the chain's prices. So what does it do?","It wins on <b>other</b> advantages: friendly service, locally roasted coffee, knowing regulars by name. You don't need to win everywhere, just on what your customers value most.")}`,"tint")}
+  ${booklet(6)}`,
+  notes:"Push students to say why on each card. Some fit more than one."}
+});
+
+L.push({n:7,w:2,title:"Costs, prices and profit",focus:"How do businesses know if they are making money?",
+ keys:["costs","revenue","profit","loss","break even"],
+ explain:{h:"Are we making money?",html:`
+  <div class="grid2">
+   ${box("Costs",`<p><b>Fixed costs</b> stay the same however many you make (a stall fee).</p><p><b>Variable costs</b> grow with every item you make (materials).</p>`,"tint")}
+   ${box("Revenue",`<p>The money coming <b>in</b> from sales.</p><p class="formula">Revenue = price &times; number sold</p>`,"tint")}
+  </div>
+  <div class="grid2">
+   ${box("Profit or loss",`<p class="formula">Profit = revenue &minus; total costs</p><p>If costs are bigger than revenue, it's a <b>loss</b>.</p>`,"tint")}
+   ${box("Break even",`<p>The number of sales where revenue <b>exactly equals</b> costs. No profit, no loss. Every sale after that is profit.</p>`,"tint")}
+  </div>`,
+  notes:"Write the two formulas on the board too. They come back in Lessons 12, 14 and the reflection."},
+ watch:["What are fixed and variable costs?","How do you work out total revenue?","Copy nothing, just watch the working."],
+ watchNote:"A GCSE exam walkthrough, a little above Year 9. Run it for the first few minutes, until the main profit calculation is done.",
+ example:{h:"Example: Mia's bookmarks",html:`
+  <div class="grid2" style="grid-template-columns:1fr 1.1fr">
+   <div style="display:flex;flex-direction:column;gap:.7cqw">
+    ${box("",`<p>Card and ribbon cost <b>$12</b> and make <b>20</b> bookmarks. Stall table costs <b>$8</b>. Price: <b>$2</b> each.</p>`,"tint")}
+    ${rv("Cost to make one bookmark?","$12 &divide; 20 = <b>$0.60</b>")}
+    ${rv("She sells all 20. Profit?","$40 revenue &minus; $20 costs = <b>$20 profit</b>")}
+    ${rv("She only sells 10. What now?","$20 revenue, $20 costs: <b>break even</b>.")}
+   </div>
+   <div class="box calc">
+    <h3>Try it: change price and sales</h3>
+    <label>Price per bookmark <span id="cPv"></span><input type="range" id="cP" min="0.5" max="5" step="0.5" value="2"></label>
+    <label>Bookmarks sold <span id="cNv"></span><input type="range" id="cN" min="0" max="20" step="1" value="20"></label>
+    <div class="grid3">
+     <div class="readout" id="cRev">$0<small>revenue</small></div>
+     <div class="readout">$20<small>total costs</small></div>
+     <div class="readout" id="cPro">$0<small>profit or loss</small></div>
+    </div>
+    <p class="small" id="cMsg"></p>
+   </div>
+  </div>
+  ${booklet(7)}`,
+  init:"calc",
+  notes:"Ask the class for a price and number, then move the sliders. Try $3 and 15 sold (that's booklet Question 7, so maybe save it)."}
+});
+
+L.push({n:8,w:2,title:"Risk and reward in business",focus:"What could go wrong, and what could go right?",
+ keys:["entrepreneur","financial risk","reward","unsold stock","disruption"],
+ explain:{h:"Every business is a gamble",html:`
+  <p class="def">An <b>entrepreneur</b> starts a business, taking on <b>risk</b> (the chance something goes wrong) for a possible <b>reward</b> (the benefit if it goes well). Bigger rewards usually mean bigger risks.</p>
+  <div class="grid3">
+   ${box("Common risks",`<ul><li>Weak demand</li><li>Unsold stock (too much or too little)</li><li>Poor pricing</li><li>Disruption (rain, power outage, clashing event)</li><li>Competition</li></ul>`,"tint")}
+   ${box("Reduce the risk",`<ul><li>Research customers first</li><li>Start with small batches</li><li>Track every dollar</li><li>Have a back-up plan</li></ul>`,"tint")}
+   ${box("The rewards",`<ul><li>Profit</li><li>Brand recognition</li><li>Room to expand</li><li>Skills, independence, pride</li></ul>`,"tint")}
+  </div>`,
+  notes:"Announce the assessment challenge properly here: design, pitch and sell at market day."},
+ watch:["What did these kids sell?","What risks did they take on?","What rewards did they get, apart from money?"],
+ watchNote:"BTN, made for Australian students.",
+ example:{h:"Example: Sticker Shack",html:`
+  ${box("",`<p>Two students sell custom stickers for <b>$1.50</b>. Materials cost <b>$25</b> and make <b>60</b> stickers. Market day is <b>outdoors</b> in the quad at lunch. Another team <b>might</b> also sell stickers.</p>`,"tint")}
+  <div class="grid4">
+   ${rv("Risk: the weather","Rain keeps customers away. <b>Fix:</b> ask for an indoor back-up spot.")}
+   ${rv("Risk: the other sticker team","Competition. <b>Fix:</b> custom designs they can't copy, or a bundle deal.")}
+   ${rv("Risk: unsold stock","They might not sell 60. <b>Fix:</b> make 30 first, then more if they sell.")}
+   ${rv("Reward: if all 60 sell?","$1.50 &times; 60 = $90. $90 &minus; $25 = <b>$65 profit</b>.")}
+  </div>
+  ${booklet(8)}`,
+  notes:"Students analyse this same stall on their Research page, so keep it brisk and leave some for them."}
+});
+
+/* ---------- Week 3 ---------- */
+L.push({n:9,w:3,title:"Choosing a product idea",focus:"What product suits our school market?",
+ keys:["business concept","viable","practical conditions","decision matrix","target market"],
+ explain:{h:"Is your idea viable?",html:`
+  <p class="def">A <b>viable</b> idea can realistically work. First check your <b>practical conditions</b>: the rules and limits you must work within.</p>
+  <div class="grid4">
+   ${box("&#128176; Cost limit",`<p>Stay under the spending cap.</p>`,"tint")}
+   ${box("&#127979; School rules",`<p>Safe, appropriate, teacher approved.</p>`,"tint")}
+   ${box("&#127850; Non-food",`<p>Unless your teacher says otherwise (hygiene and allergies).</p>`,"tint")}
+   ${box("&#9203; Time",`<p>Quick to make in a few lessons.</p>`,"tint")}
+  </div>
+  <div class="grid2">
+   ${box("A business concept answers",`<ol><li>What is it?</li><li>Who is it for?</li><li>Why will they buy it?</li></ol>`)}
+   ${box("Idea starters",`<p class="small">Bookmarks, keyrings, stress balls, friendship bracelets, decorated stationery, phone stands, upcycled products, school spirit items, or a service like a stall game.</p>`)}
+  </div>`,
+  notes:"Remind students to come up with at least three ideas before judging any."},
+ watch:["What is the product, and who is it for?","What problem or gap did he spot?","Would his idea pass our practical conditions? Why or why not?"],
+ watchNote:"A 13-year-old on Shark Tank Australia. Good for 'who is it for?'. Stop after the pitch and the first offers if time is tight.",
+ example:{h:"Example: a decision matrix",html:`
+  <p>Score each idea 1 (poor) to 3 (excellent), then add them up.</p>
+  <table class="t">
+   <tr><th>Idea</th><th>Affordable?</th><th>Attractive?</th><th>Easy to make?</th><th>Safe?</th><th>Likely to sell?</th><th>Total</th></tr>
+   <tr><td>Bookmarks</td><td class="n">3</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">2</td><td class="n">13</td></tr>
+   <tr id="mWin"><td>Stress balls</td><td class="n">3</td><td class="n">3</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">14</td></tr>
+   <tr><td>Phone stands</td><td class="n">1</td><td class="n">3</td><td class="n">1</td><td class="n">3</td><td class="n">2</td><td class="n">10</td></tr>
+  </table>
+  <div class="grid2">
+   ${rv("Which idea wins, and why?","<b>Stress balls (14).</b> Cheap, fun and likely to sell. Phone stands look great but cost too much and take too long.")}
+   ${rv("Write it as a business concept","<b>Squish Co</b> sells custom stress balls (what) to Year 9s heading into exams (who) because they're cheap, fun and personalised (why).")}
+  </div>
+  ${booklet(9)}`,
+  init:"matrix",
+  notes:"Product idea approval happens this lesson. Get teams to show you their matrix before they leave."}
+});
+
+L.push({n:10,w:3,title:"Target market and customer needs",focus:"Who are our customers, and what do they want?",
+ keys:["customer needs","customer profile","survey","sample","price point"],
+ explain:{h:"Start with people, not products",html:`
+  <div class="grid2">
+   ${box("Customer needs",`<p>The problems and wants a product solves. <b>Practical:</b> stop earbuds tangling. <b>Emotional:</b> show you support your footy team.</p>`,"tint")}
+   ${box("Customer profile",`<p>A picture of a typical customer: age, interests, money to spend, what they value.</p><p class="small">"Year 9, plays netball, has about $5 at lunch, loves bright colours."</p>`,"tint")}
+  </div>
+  <div class="grid3">
+   ${box("Survey",`<p>Questions that collect opinions. <b>Closed</b> = set options, easy to count. <b>Open</b> = own words, richer ideas.</p>`)}
+   ${box("Sample",`<p>A smaller group that represents everyone. Not just your mates!</p>`)}
+   ${box("Price point",`<p>The price customers are willing to pay. Always ask about it.</p>`)}
+  </div>`,
+  notes:"Evidence beats guessing. That line carries through to the business plan in Lesson 14."},
+ watch:["How does the video define a target market?","What target market does Nike aim at?","Who would the target market be for our market day?"],
+ watchNote:"Uses Nike and Starbucks examples. Runs about 5 minutes.",
+ example:{h:"Example: the keyring team's survey",html:`
+  <div class="grid2">
+   ${rv("Poor question: \"Don't you think our awesome bracelets are great?\" What's wrong?","It <b>pushes</b> people to say yes, so the results can't be trusted.")}
+   ${rv("Fix it","\"How likely would you be to buy a handmade bracelet? Very likely / Somewhat likely / Unlikely\"")}
+  </div>
+  <div class="grid2 fill" style="grid-template-columns:1.1fr 1fr">
+   <div class="box">${bars(["Up to $1","Up to $2","Up to $3","More than $3"],[2,5,7,1],{axis:"students",label:"Survey: most you'd pay for a personalised keyring",h:210})}<p class="small">15 Year 9s surveyed. Most you'd pay for a keyring that shows your interests. (Example data.)</p></div>
+   <div style="display:flex;flex-direction:column;gap:1cqw">
+    <p>The team planned plain keyrings. Survey says students want keyrings that <b>show their interests</b>.</p>
+    ${rv("What should the team change?","Let buyers <b>choose a charm</b>, and set a price around <b>$2 to $3</b>, matching the survey. Evidence, not guesses, means less unsold stock.")}
+   </div>
+  </div>
+  ${booklet(10)}`,
+  notes:"Students write and run their own survey on the Research page. Aim for at least 15 responses."}
+});
+
+L.push({n:11,w:3,title:"Sourcing materials and trade links",focus:"Where will our materials come from?",
+ keys:["supply chain","sourcing","supplier","raw materials","ethical"],
+ explain:{h:"Every product has a supply chain",html:`
+  <p class="def">A <b>supply chain</b> is the path a product takes from <b>raw materials</b> to the final customer. <b>Sourcing</b> is finding and buying what you need from a <b>supplier</b>.</p>
+  <div class="grid3">
+   ${box("Local shop",`<p><b>+</b> Quick, check quality in person.<br><b>&minus;</b> Materials were probably made overseas anyway.</p>`,"tint")}
+   ${box("Online supplier",`<p><b>+</b> Cheaper, more choice.<br><b>&minus;</b> Delivery takes time, can't see it first.</p>`,"tint")}
+   ${box("Imported direct",`<p><b>+</b> Often cheapest.<br><b>&minus;</b> Weeks to arrive, shipping delays.</p>`,"tint")}
+  </div>
+  <div class="grid2">
+   ${box("Ethical choices",`<p>Were workers paid fairly? Will it end up as landfill? Could we use recycled or upcycled materials?</p>`)}
+   ${box("Supply Nation",`<p>Lists checked Aboriginal and Torres Strait Islander businesses, so buyers can keep money flowing to First Nations communities.</p>`,"fn")}
+  </div>`,
+  notes:"Every link is a weak point. Link back to interdependence from Week 1."},
+ watch:["List the stages from cotton field to T-shirt.","Which stage do you think takes the longest?","Where could something go wrong?"],
+ watchNote:"From a custom T-shirt business, under 4 minutes. Matches the cotton example in the reading.",
+ example:{h:"Example: the journey of a cotton T-shirt",html:`
+  ${flow([["Cotton farm","NSW and Queensland"],["Exported","raw fibre shipped to Asia"],["Factory","spun, woven, sewn"],["Shipped back","container ship"],["Outer Harbor","Adelaide port"],["Truck and warehouse",""],["Store","you buy it"]])}
+  <div class="grid2">
+   ${rv("How many countries and jobs are involved?","At least <b>two countries</b>, and farmers, factory workers, ship crews, wharfies, truck drivers and shop staff.")}
+   ${rv("What happened to chains like this during COVID-19?","Factories closed and ports clogged, so products arrived late or not at all. Businesses depend on links they <b>don't control</b>.")}
+  </div>
+  ${rv("Your stall: thread from a local craft shop, label says 'Made in China'. Is your stall part of global trade?","Yes. Your tiny business depends on factories, ships and suppliers overseas. That's <b>interdependence</b>.")}
+  ${booklet(11)}`,
+  notes:"The last card is exactly what students write on their supply chain map."}
+});
+
+L.push({n:12,w:3,title:"Budgeting and pricing",focus:"How do we set a price that customers accept and still make a profit?",
+ keys:["budget","startup costs","unit cost","expected revenue","pricing"],
+ explain:{h:"Plan the money before you spend it",html:`
+  <p class="def">A <b>budget</b> estimates the money you'll spend and earn. It shows whether an idea can make a profit.</p>
+  <div class="grid4">
+   ${box("1. Startup costs",`<p>One-off costs before any sales: materials, tablecloth, signs.</p>`,"tint")}
+   ${box("2. Unit cost",`<p>Cost of making <b>one</b>: materials &divide; number made.</p>`,"tint")}
+   ${box("3. Expected revenue",`<p>Price &times; number you <b>realistically</b> expect to sell.</p>`,"tint")}
+   ${box("4. Expected profit",`<p>Expected revenue &minus; startup costs.</p>`,"tint")}
+  </div>
+  ${box("Three ways to set a price",`<div class="grid3"><p><b>Cost-plus:</b> add an amount on top of unit cost.</p><p><b>Competitor:</b> check what similar products sell for.</p><p><b>Research-based:</b> use your survey's price point.</p></div>`)}`,
+  notes:"Golden rule: price must be higher than unit cost, or every sale loses money."},
+ watch:["Which pricing strategy would suit a school stall?","What is cost-plus pricing?","Which strategy surprised you?"],
+ watchNote:"Ten strategies in about 4 minutes. Students only need cost-plus, competitor and research-based, so tell them to listen out for those.",
+ example:{h:"Example: Ava and Tom's bracelets",html:`
+  <div class="grid2">
+   <div style="display:flex;flex-direction:column;gap:.7cqw">
+    ${box("",`<p>Thread and beads <b>$15</b> make <b>30</b> bracelets. A sign costs <b>$5</b>. They price at <b>$2</b> and expect to sell <b>25</b>.</p>`,"tint")}
+    ${rv("Unit cost?","$15 &divide; 30 = <b>$0.50</b>")}
+    ${rv("Expected revenue?","$2 &times; 25 = <b>$50</b>")}
+    ${rv("Expected profit?","$50 &minus; $20 startup costs = <b>$30</b>")}
+   </div>
+   <div style="display:flex;flex-direction:column;gap:.7cqw">
+    <h3>Finding the right price</h3>
+    ${rv("$0.60 each?","<b>Too low.</b> Students love it, but they barely cover the $0.50 unit cost.")}
+    ${rv("$5 each?","<b>Too high.</b> More per sale, but most Year 9s walk past.")}
+    ${rv("$2 each?","<b>About right.</b> High enough for profit, low enough that the target market buys.")}
+   </div>
+  </div>
+  ${booklet(12)}`,
+  notes:"Conference with teams about their budget while they work. There's a teacher notes box on the Research page."}
+});
+
+/* ---------- Week 4 ---------- */
+L.push({n:13,w:4,title:"Branding and promotion",focus:"How do we get customers to notice and trust our business?",
+ keys:["brand name","logo","slogan","promotion","advertisement"],
+ explain:{h:"You have a few seconds to get noticed",html:`
+  <div class="grid3">
+   ${box("Brand name",`<p>Short, easy to say and remember, linked to what you sell.</p>`,"tint")}
+   ${box("Logo",`<p>Simple enough to draw from memory. Works in black and white and small.</p>`,"tint")}
+   ${box("Slogan",`<p>A catchy line that shows your competitive advantage.</p>`,"tint")}
+  </div>
+  <p class="def"><b>Promotion</b> is anything that tells customers about a product and persuades them to buy: posters, posts, announcements, samples, deals, how you talk to people.</p>
+  <div class="grid2">
+   ${box("Be consistent",`<p>Same name, logo, colours and slogan on your poster, sign, price tags and packaging.</p>`)}
+   ${box("Be honest",`<p>Under the <b>Australian Consumer Law</b>, businesses must not mislead customers.</p>`)}
+  </div>`,
+  notes:"Ask students for brands they could draw from memory. Most can do a few logos instantly. That's the point."},
+ watch:["According to the video, is a brand the same as a logo?","Who decides what your brand is?","What gut feeling do you want customers to have about your stall?"],
+ watchNote:"The Futur, 4 minutes. Big idea: a brand is what customers think and feel, not just the logo.",
+ example:{h:"Example: Knot Bad Bracelets brand kit",html:`
+  <div class="grid2" style="grid-template-columns:1fr 1.3fr">
+   <div class="poster">
+    <svg viewBox="0 0 120 60" width="40%" aria-hidden="true"><path d="M10 30 C30 5, 50 55, 60 30 S90 5, 110 30" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><circle cx="60" cy="30" r="9" fill="#BDD675"/></svg>
+    <span class="pt">Knot Bad Bracelets</span>
+    <span>Your style, your colours</span>
+    <span class="pp">$2</span>
+    <span>Pick your colours and a letter bead</span>
+    <b>Stall 4 &middot; Market day lunchtime</b>
+    <span>Grab yours before they sell out!</span>
+   </div>
+   <div style="display:flex;flex-direction:column;gap:.8cqw">
+    <h3>Does the poster have all five features?</h3>
+    <div class="grid2" style="gap:.8cqw">
+    ${rv("1. Eye-catching headline or image","Bright colours, the knot logo and a bold name.")}
+    ${rv("2. Product and price","Bracelets, $2.")}
+    ${rv("3. Main benefit or advantage","Personalised: pick your colours and letter bead.")}
+    ${rv("4. Where and when","Stall 4, market day lunchtime.")}
+    ${rv("5. Call to action","\"Grab yours before they sell out!\"")}
+    </div>
+   </div>
+  </div>
+  ${booklet(13)}`,
+  notes:"The name tells you the product and adds humour. The slogan shows the competitive advantage (personalisation)."}
+});
+
+L.push({n:14,w:4,title:"Writing the business plan",focus:"How do we organise our ideas into a clear plan?",
+ keys:["business plan","terminology","justify","evidence","realistic"],
+ explain:{h:"Bring it all together",html:`
+  <p class="def">A <b>business plan</b> explains what a business will do, who it serves, how it makes money and how it handles problems.</p>
+  ${box("Your nine sections",`<div class="row">${["Business name","Product","Target market","Materials and sourcing","Costs and pricing","Competitive advantage","Risks and rewards","Trade link","Marketing"].map((s,i)=>`<span class="chip">${i+1}. ${s}</span>`).join("")}</div>`,"tint")}
+  <div class="grid3">
+   ${box("Realistic",`<p>Real prices, sensible targets. Not "500 bracelets in one lunchtime".</p>`)}
+   ${box("Justify with evidence",`<p>Give reasons <b>and</b> proof: survey results, real prices, calculations.</p>`)}
+   ${box("Use the terminology",`<p>Target market, unit cost, competitive advantage, supply chain, interdependence.</p>`)}
+  </div>`,
+  notes:"You've done most of the thinking in earlier lessons. Point students back to Lessons 9 to 13 in their booklet."},
+ watch:["What steps did you see?","Which of our nine sections showed up?","Which section do you think will be hardest for your team?"],
+ watchNote:"A short silent animation, so you can talk over it. Pause on any step that matches one of the nine sections.",
+ example:{h:"Example: weak vs strong",html:`
+  <div class="grid2">
+   ${box("Weak",`<p class="lead">"We will charge $2 because it seems fair."</p>`)}
+   ${rv("Make it strong","\"We will charge $2 because our unit cost is $0.50 and <b>11 of the 15 students</b> we surveyed said they would pay $2 or more.\" Numbers and research, so the reader can trust it.")}
+  </div>
+  ${box("From a model plan: Knot Bad Bracelets",`<p><b>Competitive advantage:</b> Customers choose their own colours and a letter bead, so every bracelet is unique. No other stall surveyed offers this.</p><p><b>Trade link:</b> Our thread is from a local craft store, but it was made in China. We depend on factories, shipping and suppliers overseas: <b>interdependence</b>.</p><p class="small">Notice: short, specific, uses evidence and terminology.</p>`,"tint")}
+  ${booklet(14)}`,
+  notes:"Assessment 1 (Business Plan, 20%) is the Research page this lesson."}
+});
+
+L.push({n:15,w:4,title:"Building a persuasive business pitch",focus:"How do we convince people our product will succeed?",
+ keys:["pitch","persuasive","hook","call to action","delivery"],
+ explain:{h:"Two to four minutes to win them over",html:`
+  <p class="def">A <b>pitch</b> is a short, <b>persuasive</b> presentation that convinces an audience your idea is worth backing.</p>
+  <div class="grid2">
+   ${box("The shape of a pitch",`<ol><li><b>Hook:</b> grab attention</li><li>Product introduction</li><li>Target market (and your research)</li><li>Competitive advantage</li><li>Cost and price</li><li>Risks and rewards</li><li>Why customers will buy it</li><li><b>Call to action:</b> what you want them to do</li></ol>`,"tint")}
+   ${box("Delivery tips",`<ul><li>Speak clearly, steady pace</li><li>Look at the audience, not your notes</li><li>Cue cards with key words only</li><li>Everyone in the team speaks</li><li>Bring a prototype or poster</li></ul>`,"tint")}
+  </div>`,
+  notes:"Evidence again: 'We think people will like it' is weak. 'Twelve out of fifteen said they would buy one' is strong."},
+ watch:["How did he hook the Sharks?","Which parts of our pitch shape did you hear?","What did his delivery do well?"],
+ watchNote:"American Shark Tank. Watch the pitch itself; you can stop once the negotiating starts.",
+ example:{h:"Example: a model pitch, part by part",html:`
+  <div class="grid4">
+   ${rv("Hook","\"Hands up if you've ever lost a bracelet because it didn't fit right.\"")}
+   ${rv("Product","\"Knot Bad Bracelets: handmade, adjustable, and you pick every colour.\"")}
+   ${rv("Target market","\"Year 9s. 12 of the 15 we surveyed said they'd buy one.\"")}
+   ${rv("Advantage","\"Nobody else lets you add a letter bead. Every one is unique.\"")}
+   ${rv("Cost and price","\"Unit cost 50 cents, price $2, expected profit $30.\"")}
+   ${rv("Risks and rewards","\"If it rains we move inside. We're making 30 first, then more if they sell.\"")}
+   ${rv("Why they'll buy","\"Cheap, personal, and it shows who you are.\"")}
+   ${rv("Call to action","\"Find us at stall 4 before they sell out!\"")}
+  </div>
+  ${booklet(15)}`,
+  notes:"Reveal in order and ask students to name each part before you click. Teams plan theirs on the pitch planner."}
+});
+
+L.push({n:16,w:4,title:"Pitch day",focus:"Can we convince an audience our business will succeed?",
+ keys:["pitch","feedback","evidence","audience","self-assessment"],
+ explain:{h:"How today runs",html:`
+  <div class="grid3">
+   ${box("Presenters",`<ul><li>2 to 4 minutes</li><li>Every team member speaks</li><li>Hook first, call to action last</li><li>Use your evidence and numbers</li></ul>`,"tint")}
+   ${box("Audience",`<ul><li>Phones away, eyes on the speaker</li><li>Fill in a peer feedback form for each team</li><li>One strength and one improvement, with a reason</li></ul>`,"tint")}
+   ${box("After you present",`<ul><li>Complete your self-assessment</li><li>Get teacher sign-off</li><li>Next week: market day!</li></ul>`,"tint")}
+  </div>
+  ${box("Good feedback is specific",`<div class="grid2"><p><b>Not useful:</b> "It was good."</p><p><b>Useful:</b> "Your survey numbers made the price convincing, but you spoke too fast in the risks part."</p></div>`)}`,
+  notes:"Set the running order before the lesson. Use the peer feedback forms and audience notes in the booklet."},
+ watch:["Which pitch had the strongest opening?","How long were the best ones?","What can you steal for your own pitch?"],
+ watchNote:"A warm-up before presentations. These are personal pitches, not business ones, but the hooks and brevity carry across.",
+ example:{h:"Example: what an A pitch sounds like",html:`
+  <div class="grid2">
+   ${box("A grade (Communication)",`<p>A <b>highly persuasive, well-structured</b> pitch that engages the audience confidently.</p>`,"tint")}
+   ${box("C grade (Communication)",`<p>A <b>clear</b> pitch that communicates appropriately with the audience.</p>`,"tint")}
+  </div>
+  <div class="grid3">
+   ${rv("What turns a C into an A?","Evidence (survey results, numbers), a strong hook, and confident delivery with eye contact.")}
+   ${rv("What do the best pitches avoid?","Reading from a script, going over 4 minutes, and claims with no proof.")}
+   ${rv("What comes next?","<b>Week 5: market day.</b> Then the reflection, using your sales record and profit or loss.")}
+  </div>
+  ${booklet(16)}`,
+  notes:"Pull these up between pitches if the room needs resetting."}
+});
+
+/* ---------- build slides ---------- */
+const DECKS = L.map(l=>{
+  const v=VIDEOS[l.n];
+  return [
+   {intro:true, notes:`Booklet Lesson ${l.n}. Keywords for today: ${l.keys.join(", ")}.`, html:`
+     <span class="num">LESSON ${l.n} &middot; WEEK ${l.w}: ${WEEKS[l.w].toUpperCase()}</span>
+     <h1>${l.title}</h1>
+     <p class="q">Today's question: <b>${l.focus}</b></p>
+     ${chips(l.keys)}`},
+   {mode:"Learn", h:l.explain.h, html:l.explain.html, notes:l.explain.notes},
+   {mode:"Watch", mc:"#d22", h:v.title, html:`<div class="vgrid"><div>${player(v)}</div>${box("Watch for",`<ol>${l.watch.map(q=>`<li>${q}</li>`).join("")}</ol><p class="small">${v.src}. Just watch and think, no writing.</p>`,"tint")}</div>`, notes:l.watchNote},
+   {mode:"Example", mc:"var(--lime)", h:l.example.h, html:l.example.html, notes:l.example.notes, init:l.example.init}
+  ];
+});
+
+/* ---------- engine ---------- */
+let cur = -1, idx = 0;   // cur = -1 is the unit home
+const stage=$("#stage"), notes=$("#notes");
+const wc = n => `var(--w${L[n].w})`;
+
+function buildNav(){
+  const nav=$("#lessonNav");
+  nav.innerHTML=[1,2,3,4].map(w=>`<div class="wkgrp" style="--wc:var(--w${w})"><b>W${w}</b>${L.filter(l=>l.w===w).map(l=>`<button data-l="${l.n-1}" title="${l.title}">${l.n}</button>`).join("")}</div>`).join("");
+  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>go(+b.dataset.l,0));
+}
+function homeHTML(){
+  return `<section class="slide home" style="--wc:var(--teal)">
+   <div class="eyebrow"><span class="mode" style="--mc:var(--lime)">Year 9 Economics and Business</span></div>
+   <h1>Trade, Enterprise and Market Day</h1>
+   <div class="grid4 fill">${[1,2,3,4].map(w=>`<div class="wkcol" style="--wc:var(--w${w})"><h3>Week ${w}: ${WEEKS[w]}</h3>${L.filter(l=>l.w===w).map(l=>`<button class="lbtn" data-go="${l.n-1}"><i>${l.n}</i>${l.title}</button>`).join("")}</div>`).join("")}</div>
+   ${box("",`<div class="grid4" style="font-size:1.4cqw"><p><b>1. Business plan</b> 20%<br><span class="small">Lesson 14</span></p><p><b>2. Business pitch</b> 30%<br><span class="small">Lesson 16</span></p><p><b>3. Market stall</b> 20%<br><span class="small">Week 5, market day</span></p><p><b>4. Reflection</b> 30%<br><span class="small">Week 5</span></p></div>`,"tint")}
+  </section>`;
+}
+function render(){
+  stage.innerHTML="";
+  document.querySelectorAll("#lessonNav button").forEach(b=>b.setAttribute("aria-current", +b.dataset.l===cur));
+  if(cur<0){
+    stage.innerHTML=homeHTML();
+    stage.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(+b.dataset.go,0));
+    $("#count").textContent="Unit home"; $("#progBar").style.width="0";
+    document.documentElement.style.setProperty("--wc","var(--teal)");
+    notes.innerHTML=`<h4>Unit home</h4><p>Pick a lesson. Each lesson is four slides: intro, explain, video, example. Then students work through that lesson in their booklet.</p>`;
+    history.replaceState(null,"","#home"); return;
+  }
+  const s=DECKS[cur][idx], l=L[cur];
+  const el=document.createElement("section");
+  el.className="slide"+(s.intro?" intro":"");
+  el.style.setProperty("--wc",wc(cur));
+  if(s.mc) el.style.setProperty("--mc",s.mc);
+  el.innerHTML = s.intro ? s.html :
+    `<div class="eyebrow"><span class="mode">${s.mode}</span><span>Lesson ${l.n}: ${l.title}</span></div><h2>${s.h}</h2>${s.html}`;
+  stage.appendChild(el);
+  el.querySelectorAll("[data-reveal]").forEach(b=>b.onclick=()=>b.classList.toggle("open"));
+  if(s.init && INITS[s.init]) INITS[s.init](el);
+  $("#count").textContent=`Lesson ${l.n} · slide ${idx+1} of ${DECKS[cur].length}`;
+  $("#progBar").style.width=((idx+1)/DECKS[cur].length*100)+"%";
+  document.documentElement.style.setProperty("--wc",wc(cur));
+  notes.innerHTML=`<h4>Lesson ${l.n}, slide ${idx+1}</h4><p>${s.notes||"No notes."}</p>${idx===2?`<p class="small">Swap this video by editing VIDEOS[${l.n}] at the top of the script.</p>`:""}`;
+  history.replaceState(null,"",`#L${l.n}-${idx+1}`);
+}
+function go(l,i){cur=l;idx=i;render();stage.focus?.()}
+function step(d){
+  if(cur<0){ if(d>0) go(0,0); return; }
+  const n=idx+d;
+  if(n>=0 && n<DECKS[cur].length){idx=n;render();}
+  else if(n>=DECKS[cur].length && cur<L.length-1) go(cur+1,0);
+  else if(n<0 && cur>0) go(cur-1,DECKS[cur-1].length-1);
+  else if(n<0) {cur=-1;render();}
+}
+
+const INITS = {
+  calc(el){
+    const P=el.querySelector("#cP"),N=el.querySelector("#cN");
+    const upd=()=>{const p=+P.value,n=+N.value,rev=p*n,pro=rev-20;
+      el.querySelector("#cPv").textContent="$"+p.toFixed(2); el.querySelector("#cNv").textContent=n;
+      el.querySelector("#cRev").innerHTML=`$${rev.toFixed(2)}<small>revenue</small>`;
+      const pe=el.querySelector("#cPro"); pe.innerHTML=`${pro<0?"&minus;":""}$${Math.abs(pro).toFixed(2)}<small>${pro>0?"profit":pro<0?"loss":"break even"}</small>`;
+      pe.className="readout "+(pro>0?"pos":pro<0?"neg":"");
+      const be=Math.ceil(20/p); el.querySelector("#cMsg").textContent=`At $${p.toFixed(2)}, Mia needs to sell ${be>20?"more than 20 (impossible with 20 made)":be} to break even.`;};
+    P.oninput=N.oninput=upd; upd();
+  },
+  matrix(el){
+    const win=el.querySelector("#mWin"); const r=el.querySelector("[data-reveal]");
+    r.addEventListener("click",()=>win.classList.toggle("win",r.classList.contains("open")));
+  }
+};
+
+$("#prev").onclick=()=>step(-1);
+$("#next").onclick=()=>step(1);
+$("#homeBtn").onclick=()=>{cur=-1;render()};
+$("#notesBtn").onclick=()=>{const h=!notes.hidden;notes.hidden=h;$("#notesBtn").setAttribute("aria-pressed",!h)};
+$("#fsBtn").onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.()};
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,select,textarea")) return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();step(1)}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();step(-1)}
+  else if(e.key.toLowerCase()==="n") $("#notesBtn").click();
+  else if(e.key.toLowerCase()==="f") $("#fsBtn").click();
+});
+
+buildNav();
+function fromHash(){
+  const m=location.hash.match(/^#L(\d+)(?:-(\d+))?/);
+  if(m && L[+m[1]-1]){cur=+m[1]-1; idx=Math.min((+m[2]||1)-1,3);} else cur=-1;
+  render();
+}
+window.addEventListener("hashchange",fromHash);
+fromHash();
+</script>
+</body>
+</html>
