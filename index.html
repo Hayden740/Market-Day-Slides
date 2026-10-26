@@ -198,8 +198,8 @@ svg text{fill:var(--ink);font-family:var(--f-body)}
 const VIDEOS = {
   1:{id:"MwjIerN8Urk", title:"Imports and Exports Explained for Kids", src:"Money Starters"},
   2:{id:"v3Ec98E6CtM", title:"What is Specialisation?", src:"tutor2u"},
-  3:{id:"oCDV7xB6oBg", title:"How Australia and China's trade relationship broke down", src:"CNBC Explains"},
-  4:{id:"lp1zIvc5oaY", title:"China imposes heavy tariffs on Australian wine", src:"WION (Nov 2020)"},
+  3:{mp4:"https://mediacore-live-production.akamaized.net/video/02/j4/Z/3o.mp4?source=web&content_id=106514014", page:"https://www.abc.net.au/btn/classroom/eu-free-trade-deal/106514014", poster:"https://live-production.wcms.abc-cdn.net.au/98849c36045c5fd2b4019539595a25ac?impolicy=wcms_crop_resize&cropH=1080&cropW=1920&xPos=0&yPos=0&width=862&height=485", title:"EU Free Trade Deal", src:"BTN (Behind the News), March 2026, 4 min"},
+  4:{id:"cHBj1ePnm0g", title:"China scraps its tariffs on Australian wine", src:"ABC News (Australia), March 2024"},
   5:{id:"2bc4rwjdfNg", title:"Supply and Demand Explained: How Prices Are Set", src:"Joe Blogs"},
   6:{id:"Kdnto-ruNmE", title:"What is Competitive Advantage?", src:"Shaf Rasul"},
   7:{id:"7Spi9AbRoFg", title:"Calculating Profit from Costs and Revenue", src:"Mr Gauvain"},
@@ -219,6 +219,8 @@ const WEEKS = {1:"Trade and interdependence",2:"Markets and business",3:"Plannin
 function $(s){return document.querySelector(s)}
 const ytURL = v => `https://www.youtube.com/watch?v=${v.id}${v.start?`&t=${v.start}s`:""}`;
 function player(v){
+  if(v.mp4) return `<div class="vid"><video controls preload="metadata" playsinline src="${v.mp4}"${v.poster?` poster="${v.poster}"`:""} style="width:100%;height:100%;display:block;background:#000"></video></div>
+       <p class="ytlink">Video not playing? <a href="${v.page}" target="_blank" rel="noopener">Watch it on the BTN website</a></p>`;
   const local = location.protocol==="file:";
   return local
     ? `<a class="vidlink" href="${ytURL(v)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><b>${v.title}</b><span>${v.src} &middot; opens on YouTube</span></a>`
@@ -316,8 +318,8 @@ L.push({n:3,w:1,title:"Australia in the global market",focus:"What does Australi
    ${box("Free trade agreement",`<p>A deal between countries to <b>cut tariffs</b>, so their goods are cheaper for each other's customers.</p>`)}
   </div>`,
   notes:"Australia has free trade agreements with China, Japan, South Korea and Indonesia, among others."},
- watch:["Who is Australia's biggest trading partner?","What does Australia mostly sell to China?","What went wrong in the relationship, and who was affected?"],
- watchNote:"CNBC, 2021. It sets up the wine story in Lesson 4. Stop at about 4 minutes if it runs long.",
+ watch:["What is a free trade agreement?","What could get cheaper for Australians, and what could we sell more of in Europe?","Why isn't everyone happy about the deal?"],
+ watchNote:"BTN, March 2026, 4 min 14 s. Australia's new free trade deal with the EU: tariffs, free trade agreements and the pros and cons. It plays straight from the ABC; if the school network blocks it, use the BTN website link under the video.",
  example:{h:"Example: who buys from Australia?",html:`
   <div class="grid2 fill" style="grid-template-columns:1.3fr 1fr">
    <div class="box">${bars(["China","Japan","USA","S. Korea","India"],[195.6,65.1,59.9,44.2,32.2],{axis:"$ billion",fmt:v=>"$"+v,colours:["var(--wc)","var(--wc)","var(--muted)","var(--wc)","var(--wc)"],label:"Australia's top five export markets 2025"})}
@@ -344,8 +346,8 @@ L.push({n:4,w:1,title:"Trade with Asia and South Australia",focus:"How is South 
   </div>
   ${box("Why exports matter here",`<p>SA has <b>fewer than 2 million</b> people. Selling overseas lets businesses reach millions more customers, earn more and employ more South Australians.</p>`)}`,
   notes:"Ask who has family working in wine, fishing or at a uni. Local connections stick."},
- watch:["How big were China's tariffs on Australian wine?","Why would a tariff stop Chinese customers buying our wine?","Who in South Australia would feel this?"],
- watchNote:"Short news report from November 2020. If you'd like a First Nations angle instead, search YouTube for Makassan trepang trade.",
+ watch:["How much Australian wine did China buy before the tariffs?","How high were the tariffs, and what happened to sales?","Now the tariffs are gone, will sales bounce straight back? Why or why not?"],
+ watchNote:"ABC News, March 2024. Covers the whole story: about $1.1 billion of wine sold to China, tariffs of up to 220%, then the tariffs lifted. Preview the length first; stop once the reporter has covered why sales may not fully recover.",
  example:{h:"Example: South Australian wine and China",html:`
   <div class="tl">
    ${box(`<span class="yr">Before 2020</span>`,`<p>China is our most valuable wine market.</p>`,"tint")}
