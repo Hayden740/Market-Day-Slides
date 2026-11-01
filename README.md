@@ -20,3 +20,9 @@ Each lesson is four slides:
 ## Swapping a video
 
 All videos are in the `VIDEOS` list near the top of the script in `index.html`. Replace the `id` with the part after `watch?v=` in any YouTube link. Add `start:90` to start 90 seconds in.
+
+## Stall Product Planner
+
+A step-by-step planner students work through in teams to get their market stall product together: team roles, Asian country, product idea (with the booklet's idea starters and easy food list), shopping list, price and profit, making plan, stall and pitch, then a printable plan and a copyable shopping list for the teacher.
+
+Live: https://hayden740.github.io/Market-Day-Slides/product-planner/

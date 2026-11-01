@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stall Product Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#eef2f3; --surface:#fcfdfd; --ink:#0e2533; --muted:#536673; --line:#ccd8dd;
+  --teal:#013148; --coral:#d24c42; --green:#2f8a5a; --blue:#1f739c; --pink:#c43f66;
+  --coralT:#F46E63; --greenT:#7AC698; --blueT:#7cc7ea; --pinkT:#F38C9F; --lime:#BDD675;
+  --accent:var(--teal); --good:#2f7d3a; --bad:#b3372f; --warn:#9a6b00;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#081822; --surface:#0f2330; --ink:#e3eef3; --muted:#9db3bf; --line:#24404f;
+  --teal:#8fd0ef; --coral:#ff8a7f; --green:#86d4a6; --blue:#8fd0ef; --pink:#f7a0b6;
+  --accent:#8fd0ef; --good:#7fcf86; --bad:#f08a80; --warn:#e8c25a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#081822; --surface:#0f2330; --ink:#e3eef3; --muted:#9db3bf; --line:#24404f;
+  --teal:#8fd0ef; --coral:#ff8a7f; --green:#86d4a6; --blue:#8fd0ef; --pink:#f7a0b6;
+  --accent:#8fd0ef; --good:#7fcf86; --bad:#f08a80; --warn:#e8c25a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 48px;display:grid;gap:16px}
+.wrap>*,.stack>*{min-width:0}
+.stack{display:grid;gap:16px}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px}
+.dots{display:inline-flex;gap:3px}.dots i{width:9px;height:9px;border-radius:50%;display:block}
+.teamtag{margin-left:auto;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.steps button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 4px;font-size:13px;display:grid;gap:2px;justify-items:center;text-align:center;line-height:1.15}
+.steps button b{font-family:var(--f-mono);font-size:12px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ink) 8%,var(--surface))}
+.steps button.done b{background:var(--good);color:#fff}
+.steps button[aria-current="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.steps button[aria-current="true"] b{background:var(--ink);color:var(--bg)}
+header h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.5vw,42px);letter-spacing:-.02em;line-height:1.05;margin:0 0 6px}
+header p{margin:0;color:var(--muted);max-width:72ch}
+.eyebrow{font-family:var(--f-mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin-bottom:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:21px;margin:0 0 10px;line-height:1.2}
+.card h3{font-size:17px;margin:0 0 6px}
+.card p{margin:0 0 10px}.card p:last-child{margin-bottom:0}
+.muted{color:var(--muted)}.small{font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid2>*,.grid3>*{min-width:0}
+.bl-coral{border-left:5px solid var(--coralT)}.bl-green{border-left:5px solid var(--greenT)}.bl-blue{border-left:5px solid var(--blueT)}.bl-pink{border-left:5px solid var(--pinkT)}.bl-lime{border-left:5px solid var(--lime)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 16px;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.navrow{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+input[type=text],input[type=number],textarea,select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;max-width:100%;min-width:0}
+input[type=text],textarea,select.full{width:100%}
+input[type=number]{width:100px}
+textarea{min-height:80px;resize:vertical}
+label.field{display:grid;gap:4px;font-weight:700}
+label.field .hint{font-weight:400;font-size:14px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--coral)}
+
+.members{display:grid;gap:8px}
+.mem{display:grid;grid-template-columns:minmax(0,1fr) 200px auto;gap:8px;align-items:center}
+.roles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.role{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px}
+.role b{display:block;font-size:15px;margin-bottom:2px}
+
+.countries{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.ctry{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 6px;font-weight:700;display:grid;gap:4px;justify-items:center}
+.ctry span{font-size:26px;line-height:1}
+.ctry[aria-pressed="true"]{border-color:var(--coral);background:color-mix(in srgb,var(--coralT) 14%,var(--surface))}
+.starters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.starters>div{border:1px solid var(--line);border-radius:12px;padding:12px}
+.chip{display:inline-block;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;margin:3px 4px 3px 0;font-size:14px;text-align:left}
+.chip:hover{border-color:var(--coral)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.type{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;text-align:left;display:grid;gap:4px}
+.type b{font-size:17px}.type span{font-size:14px;color:var(--muted)}
+.type[aria-pressed="true"]{border-color:var(--coral);background:color-mix(in srgb,var(--coralT) 12%,var(--surface))}
+.checks{display:grid;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+.check input{margin-top:5px;width:18px;height:18px;accent-color:var(--good)}
+.check.on{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--surface))}
+.foodtbl{border-collapse:collapse;width:100%;font-size:14px}
+.foodtbl td,.foodtbl th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.eq{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;background:color-mix(in srgb,var(--greenT) 30%,var(--surface))}
+
+.shop{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.shop th,.shop td{border:1px solid var(--line);padding:6px;text-align:left;vertical-align:middle}
+.shop th{background:color-mix(in srgb,var(--ink) 6%,var(--surface));font-size:14px}
+.shop input[type=text]{min-width:160px}
+.shop input[type=number]{width:80px}
+.shop select{min-width:130px}
+.shop .tot{font-family:var(--f-mono);font-weight:700;white-space:nowrap}
+.shop tfoot td{font-weight:700;background:color-mix(in srgb,var(--lime) 25%,var(--surface))}
+.x{border:0;background:none;color:var(--bad);font-size:20px;line-height:1;padding:4px 8px}
+.tablewrap{overflow-x:auto}
+
+.money{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.readout{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-family:var(--f-mono);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
+.readout small{display:block;font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--muted)}
+.readout.pos{border-color:var(--good);color:var(--good)}.readout.neg{border-color:var(--bad);color:var(--bad)}
+.sliders{display:grid;gap:14px}
+.sl{display:grid;gap:4px}
+.sl .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700}
+.sl .top input{width:100px}
+.alert{border-radius:10px;padding:10px 14px;font-size:15px}
+.alert.bad{background:color-mix(in srgb,var(--bad) 10%,var(--surface));color:var(--bad);border:1px solid var(--bad)}
+.alert.warn{background:color-mix(in srgb,var(--warn) 10%,var(--surface));border:1px solid var(--warn)}
+.alert.good{background:color-mix(in srgb,var(--good) 10%,var(--surface));color:var(--good);border:1px solid var(--good)}
+.alerts{display:grid;gap:8px}
+.survey{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.survey button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 0;font-weight:700;font-size:14px}
+.survey button.yes{background:var(--good);color:#fff;border-color:var(--good)}
+.survey button.no{background:var(--bad);color:#fff;border-color:var(--bad)}
+.pitch{font-family:var(--f-display);font-size:20px;font-weight:600;line-height:1.4;border-left:5px solid var(--coralT);padding:12px 16px;background:color-mix(in srgb,var(--coralT) 8%,var(--surface));border-radius:0 10px 10px 0}
+.sign{border:3px dashed var(--line);border-radius:14px;padding:18px;text-align:center;display:grid;gap:4px}
+.sign .nm{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.05}
+.sign .pr{font-family:var(--f-mono);font-weight:700;font-size:30px;color:var(--coral)}
+.page[hidden]{display:none}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sumgrid>div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.sumgrid h3{font-size:13px;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.ready{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ready div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.ready div.ok{border-color:var(--good);color:var(--good)}
+.ready div.no{border-color:var(--bad);color:var(--bad)}
+.copied{color:var(--good);font-weight:700;font-size:14px}
+@media (max-width:860px){.steps{grid-template-columns:repeat(4,1fr)}.roles,.countries{grid-template-columns:repeat(3,1fr)}.starters,.types,.grid3{grid-template-columns:1fr}.grid2,.sumgrid{grid-template-columns:1fr}.money,.ready{grid-template-columns:1fr 1fr}.mem{grid-template-columns:1fr 1fr}.mem .x{justify-self:start}}
+@media (max-width:520px){.roles,.countries{grid-template-columns:1fr 1fr}.survey{grid-template-columns:repeat(5,1fr)}.mem{grid-template-columns:1fr}}
+@media print{.bar,.steps,.navrow,.noprint{display:none!important}body{background:#fff;color:#000;font-size:13px}.page{display:none!important}#p-7{display:block!important}.card{border-color:#999;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="brand"><span class="dots"><i style="background:var(--coralT)"></i><i style="background:var(--greenT)"></i><i style="background:var(--blueT)"></i><i style="background:var(--pinkT)"></i></span>Stall Product Planner</div>
+    <span class="teamtag" id="teamTag"></span>
+  </div>
+  <nav class="steps" id="steps" aria-label="Steps"></nav>
+
+  <!-- 0 TEAM -->
+  <section class="page" id="p-0">
+    <div class="stack">
+      <header><div class="eyebrow">Global Market Challenge · Step 1 of 8</div><h1>Your team</h1><p>Plan your market stall product from idea to shopping list. Work through the steps as a team on <b>one device</b>. Everything saves on this computer as you go.</p></header>
+      <div class="card">
+        <label class="field">Team name <span class="hint">You can change this later when you pick your business name.</span><input type="text" data-f="team" placeholder="e.g. The Dumpling Crew"></label>
+        <label class="field" style="margin-top:12px">Class<input type="text" data-f="cls" placeholder="e.g. 9B" style="max-width:200px"></label>
+      </div>
+      <div class="card">
+        <h2>Team members and roles</h2>
+        <div class="roles" id="roleInfo"></div>
+        <div class="members" id="members" style="margin-top:14px"></div>
+        <button class="btn sm" id="addMem" style="margin-top:10px">+ Add a member</button>
+      </div>
+      <div class="navrow"><span></span><button class="btn primary" data-step="1">Next: Choose a country →</button></div>
+    </div>
+  </section>
+
+  <!-- 1 COUNTRY -->
+  <section class="page" id="p-1" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 2 of 8</div><h1>Choose your Asian country</h1><p>Your stall celebrates one Asian country. Tap a country to see idea starters. You will pick your actual product on the next step.</p></header>
+      <div class="card"><div class="countries" id="countries"></div>
+        <div id="otherWrap" hidden style="margin-top:12px"><label class="field">Which country?<input type="text" data-f="otherCountry" placeholder="Any Asian country"></label></div>
+      </div>
+      <div class="card" id="starterCard" hidden><h2 id="starterH"></h2><div class="starters" id="starters"></div></div>
+      <div class="navrow"><button class="btn" data-step="0">← Back</button><button class="btn primary" data-step="2">Next: Your idea →</button></div>
+    </div>
+  </section>
+
+  <!-- 2 IDEA -->
+  <section class="page" id="p-2" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 3 of 8</div><h1>Your product idea</h1><p>What will your stall sell or run? Choose the type, then pick an idea starter or write your own.</p></header>
+      <div class="card"><h2>What type of stall?</h2><div class="types" id="types"></div></div>
+      <div class="card" id="ideaPick"></div>
+      <div class="card">
+        <label class="field">Our product <span class="hint">What exactly will customers get? Be specific.</span><input type="text" data-f="product" placeholder="e.g. Cups of mango lassi with a paper umbrella"></label>
+        <label class="field" style="margin-top:12px">How does it link to our country?<textarea data-f="link" placeholder="e.g. Mango lassi is a popular yoghurt drink in India, especially in summer."></textarea></label>
+        <label class="field" style="margin-top:12px">Who will buy it? <span class="hint">Your target customers, and why they would want it.</span><textarea data-f="customers" placeholder="e.g. Year 7 to 9 students who want a cold drink at lunch. It's sweet and costs less than the canteen."></textarea></label>
+      </div>
+      <div class="card bl-lime"><h2>Is it a good idea? The idea checker</h2><p class="small muted">Tick each one only if it is true. Talk it through as a team first.</p><div class="checks" id="viab"></div></div>
+      <div class="navrow"><button class="btn" data-step="1">← Back</button><button class="btn primary" data-step="3">Next: Shopping list →</button></div>
+    </div>
+  </section>
+
+  <!-- 3 SHOPPING -->
+  <section class="page" id="p-3" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 4 of 8 · Finance leads, everyone checks</div><h1>Shopping list</h1><p>List everything you need to make and sell your product. Look up prices on a supermarket or shop website and estimate the cost of each item. The totals add up for you.</p></header>
+      <div class="card" id="suggestCard" hidden><div class="row" style="justify-content:space-between"><span id="suggestTxt"></span><button class="btn sm" id="suggestBtn">Add suggested items</button></div></div>
+      <div class="card">
+        <div class="tablewrap"><table class="shop" id="shop"></table></div>
+        <button class="btn sm" id="addRow" style="margin-top:10px">+ Add an item</button>
+      </div>
+      <div class="card">
+        <label class="field">Spending limit <span class="hint">Ask your teacher if there is a limit. Leave blank if there isn't.</span><span class="row" style="font-weight:400">$ <input type="number" min="0" step="1" data-f="cap"></span></label>
+        <div class="alerts" id="shopAlerts" style="margin-top:10px"></div>
+      </div>
+      <div class="card small muted bl-blue">Don't forget the extras: cups, napkins, bags, sticky tape, string, price signs, gloves for food, and anything to decorate the stall. Things you already own still go on the list, marked <b>Already have</b>, but they cost $0.</div>
+      <div class="navrow"><button class="btn" data-step="2">← Back</button><button class="btn primary" data-step="4">Next: Price and profit →</button></div>
+    </div>
+  </section>
+
+  <!-- 4 PRICE -->
+  <section class="page" id="p-4" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 5 of 8</div><h1>Price and profit</h1><p>Move the sliders to test different prices. Your aim: a price that customers will pay AND that makes a profit.</p></header>
+      <div class="grid2">
+        <div class="card"><div class="sliders">
+          <div class="sl"><div class="top"><span>How many will we make?</span><input type="number" min="1" data-n="units"></div><input type="range" min="1" max="150" data-r="units"></div>
+          <div class="sl"><div class="top"><span>Price for each ($)</span><input type="number" min="0" step="0.5" data-n="price"></div><input type="range" min="0" max="10" step="0.5" data-r="price"></div>
+          <div class="sl"><div class="top"><span>How many do we expect to sell?</span><input type="number" min="0" data-n="sales"></div><input type="range" min="0" max="150" data-r="sales"></div>
+        </div></div>
+        <div class="card">
+          <div class="money">
+            <div class="readout" id="mCost">$0<small>total cost</small></div>
+            <div class="readout" id="mUnit">$0<small>cost to make one</small></div>
+            <div class="readout" id="mInc">$0<small>expected income</small></div>
+            <div class="readout" id="mPro">$0<small>expected profit</small></div>
+          </div>
+          <p class="small muted" style="margin-top:10px" id="mWork"></p>
+          <div class="alerts" id="priceAlerts"></div>
+        </div>
+      </div>
+      <div class="card bl-pink">
+        <h2>Test your price: ask 10 people</h2>
+        <p>Ask 10 students outside your team: "Would you pay <b id="svPrice">$0</b> for <span id="svProd">our product</span>?" Tap each box: once for yes, twice for no, three times to clear.</p>
+        <div class="survey" id="survey"></div>
+        <p style="margin-top:10px;font-weight:700" id="svRes"></p>
+      </div>
+      <div class="card bl-blue small">
+        <h3>Pricing tips</h3>
+        <ul style="margin:0;padding-left:1.2em"><li>Round prices like $1, $2 or $3 are quicker to serve and need less change.</li><li>Your price must be more than the cost to make one, or you lose money on every sale.</li><li>Be realistic: most students have only a few dollars at lunch.</li><li>A deal can sell more: "$2 each or 3 for $5".</li></ul>
+      </div>
+      <div class="navrow"><button class="btn" data-step="3">← Back</button><button class="btn primary" data-step="5">Next: Making plan →</button></div>
+    </div>
+  </section>
+
+  <!-- 5 MAKING -->
+  <section class="page" id="p-5" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 6 of 8 · Production leads</div><h1>Making plan</h1><p>Can you actually make enough in time? Time how long it takes to make one, then work out how many lessons you need.</p></header>
+      <div class="grid2">
+        <div class="card">
+          <label class="field">Minutes to make one <span class="hint">Make a test one and time it. For food, how long to prepare and serve one.</span><input type="number" min="0" step="0.5" data-f="mins"></label>
+          <label class="field" style="margin-top:12px">How many people making at once?<input type="number" min="1" data-f="makers"></label>
+          <label class="field" style="margin-top:12px">Minutes of making time in one lesson<input type="number" min="1" data-f="lessonMins"></label>
+          <label class="field" style="margin-top:12px">Will you make it before market day, or on the day?<select class="full" data-f="when"><option value="">choose…</option><option>Before market day</option><option>On market day</option><option>Some before, some on the day</option></select></label>
+        </div>
+        <div class="card"><div class="money" style="grid-template-columns:1fr 1fr"><div class="readout" id="tTotal">0 min<small>total making time</small></div><div class="readout" id="tLessons">0<small>lessons needed</small></div></div><div class="alerts" id="timeAlerts" style="margin-top:10px"></div></div>
+      </div>
+      <div class="card"><h2>Who does what before market day?</h2><div id="jobs" style="display:grid;gap:10px"></div></div>
+      <div class="card bl-coral" id="foodSafe" hidden><h2>Food safety plan</h2><div class="checks" id="foodChecks"></div><label class="field" style="margin-top:10px">Ingredients and allergens in our food <span class="hint">You will show this on your stall.</span><textarea data-f="allergens" placeholder="e.g. Contains milk (yoghurt). No nuts. No gluten."></textarea></label></div>
+      <div class="navrow"><button class="btn" data-step="4">← Back</button><button class="btn primary" data-step="6">Next: Stall and marketing →</button></div>
+    </div>
+  </section>
+
+  <!-- 6 STALL -->
+  <section class="page" id="p-6" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 7 of 8 · Marketing leads</div><h1>Stall and marketing</h1><p>Give your business a name, plan what your stall will look like and write a pitch to pull customers in.</p></header>
+      <div class="grid2">
+        <div class="card">
+          <label class="field">Business name<input type="text" data-f="bizName" placeholder="e.g. Lassi Land"></label>
+          <label class="field" style="margin-top:12px">Slogan <span class="hint">Short and catchy.</span><input type="text" data-f="slogan" placeholder="e.g. Beat the heat, India style!"></label>
+          <label class="field" style="margin-top:12px">Stall colours and decorations from our country<textarea data-f="decor" placeholder="e.g. Orange, white and green. Rangoli patterns on the table cloth. Bollywood music."></textarea></label>
+        </div>
+        <div class="card"><h3 class="muted small" style="font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase">Your price sign</h3><div class="sign" id="signPrev"></div></div>
+      </div>
+      <div class="card bl-green"><h2>Stall checklist</h2><div class="checks" id="stallChecks"></div></div>
+      <div class="card">
+        <h2>Your 20 second pitch</h2>
+        <p class="small muted">Fill in the gaps. This is what you will call out to people walking past.</p>
+        <label class="field">Something that grabs attention<input type="text" data-f="hook" placeholder="e.g. Hot day? Need something cold?"></label>
+        <label class="field" style="margin-top:10px">What makes it special<input type="text" data-f="special" placeholder="e.g. Made fresh in front of you with real mango"></label>
+        <label class="field" style="margin-top:10px">Call to action<input type="text" data-f="cta" placeholder="e.g. Grab one before they run out!"></label>
+        <div class="pitch" id="pitchPrev" style="margin-top:14px"></div>
+      </div>
+      <div class="navrow"><button class="btn" data-step="5">← Back</button><button class="btn primary" data-step="7">Next: Our plan →</button></div>
+    </div>
+  </section>
+
+  <!-- 7 SUMMARY -->
+  <section class="page" id="p-7" hidden>
+    <div class="stack">
+      <header><div class="eyebrow">Step 8 of 8</div><h1>Our plan</h1><p>Check everything is complete, then print it or save it as a PDF for your teacher. Copy your shopping list so your teacher knows what to buy.</p></header>
+      <div class="card noprint"><h2>Ready for approval?</h2><div class="ready" id="ready"></div></div>
+      <div class="card noprint row">
+        <button class="btn primary" id="printBtn">Print or save as PDF</button>
+        <button class="btn" id="copyShop">Copy shopping list for teacher</button>
+        <button class="btn" id="saveFile">Save plan to a file</button>
+        <label class="btn" style="display:inline-block">Open a saved plan<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
+        <span class="copied" id="copyMsg"></span>
+      </div>
+      <div class="card" id="summary"></div>
+      <div class="card noprint small muted">Working on a different computer next lesson? Use <b>Save plan to a file</b>, put it in your school drive or email it to yourself, then use <b>Open a saved plan</b> on the new computer. <button class="btn sm" id="resetBtn" style="margin-left:6px">Start a new plan</button></div>
+      <div class="navrow"><button class="btn" data-step="6">← Back</button><span></span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const money=v=>(v<0?"−":"")+"$"+Math.abs(v).toFixed(2).replace(/\.00$/,"");
+
+/* ---------- data from the Global Market Challenge booklet ---------- */
+const ROLES=[["Team leader","Keeps the team on track and makes final calls."],["Finance","Shopping list, costs, price and the money on the day."],["Production","Plans and leads making the product."],["Marketing","Business name, signs, posters and the pitch."],["Sales","Runs the stall front: serving and calling out."]];
+const COUNTRIES={
+ China:{f:"🇨🇳",make:["Paper lanterns","Red envelopes with lucky lollies"],food:["Prawn crackers in paper cones","Fortune cookies","Dumplings with soy sauce","Spring rolls with sweet chilli"],act:["Chopstick lolly challenge"]},
+ Japan:{f:"🇯🇵",make:["Origami cranes","Fortune slips (omikuji)"],food:["Onigiri (rice balls)","Edamame cups","Pocky and Japanese snacks"],act:["Lucky fishing game (yo-yo tsuri)"]},
+ India:{f:"🇮🇳",make:["Rangoli art cards","Beaded bracelets"],food:["Mango lassi","Pappadums","Samosas with chutney"],act:["Rangoli colour-in station"]},
+ Korea:{f:"🇰🇷",make:["K-pop photo cards","Mini fans"],food:["Honey butter popcorn","Korean corn dogs","Banana milk and Korean snacks"],act:["Korean-style photo booth"]},
+ Thailand:{f:"🇹🇭",make:["Mini krathong (floating flower rafts)"],food:["Thai iced tea"],act:["Elephant ring toss"]},
+ Vietnam:{f:"🇻🇳",make:["Paper conical hats (nón lá)"],food:["Rice paper rolls"],act:["Lantern decorating"]},
+ Philippines:{f:"🇵🇭",make:["Parol star lanterns"],food:["Mango float cups","Halo-halo cups"],act:["Sipa kick-ball challenge"]},
+ Indonesia:{f:"🇮🇩",make:["Batik-style bookmarks","Mini kites"],food:["Mi goreng cups","Chicken satay skewers"],act:["Kite decorating"]},
+ Malaysia:{f:"🇲🇾",make:["Wau (moon kite) bookmarks"],food:["Milo dinosaur"],act:["Congkak (counting game)"]},
+ Taiwan:{f:"🇹🇼",make:["Mini sky lantern cards"],food:["Bubble tea"],act:["Bubble tea pearl-guessing jar"]},
+};
+const FOOD={
+ "Prawn crackers in paper cones":["Bag of ready-made prawn crackers","Paper cones","No cooking"],
+ "Fortune cookies":["Packets of fortune cookies from an Asian grocer","","No cooking"],
+ "Dumplings with soy sauce":["Frozen dumplings","Soy sauce","Small cups","Forks","Microwave"],
+ "Spring rolls with sweet chilli":["Frozen mini spring rolls","Sweet chilli sauce","Oven or air fryer"],
+ "Onigiri (rice balls)":["Microwave rice","Nori sheets","Tuna","Mayo","Microwave"],
+ "Edamame cups":["Frozen edamame beans","Salt","Small cups","Microwave"],
+ "Pocky and Japanese snacks":["Pocky","Hello Panda","Rice crackers","No cooking"],
+ "Mango lassi":["Canned mango pulp","Yoghurt","Milk","Cups","Blender"],
+ "Pappadums":["Packet pappadums","Microwave"],
+ "Samosas with chutney":["Frozen vegetable samosas","Mango chutney","Oven or air fryer"],
+ "Honey butter popcorn":["Microwave popcorn","Honey","Butter","Paper bags","Microwave"],
+ "Korean corn dogs":["Frozen Korean corn dogs","Sugar","Tomato sauce","Oven or air fryer"],
+ "Banana milk and Korean snacks":["Bottles of banana milk","Choco Pies","Honey Butter chips","No cooking"],
+ "Thai iced tea":["Thai tea mix","Sweetened condensed milk","Ice","Cups","Kettle"],
+ "Rice paper rolls":["Rice paper","Vermicelli","Lettuce","Carrot","Cucumber","Sweet chilli sauce","Kettle"],
+ "Mango float cups":["Plain biscuits","Cream","Condensed milk","Mango","Cups","No cooking"],
+ "Halo-halo cups":["Crushed ice","Fruit","Jelly cubes","Condensed milk","No cooking"],
+ "Mi goreng cups":["Indomie mi goreng packets","Cups","Forks","Kettle"],
+ "Chicken satay skewers":["Chicken pieces","Satay sauce","Skewers","Sandwich press or air fryer"],
+ "Milo dinosaur":["Milo","Milk","Ice","Cups","No cooking"],
+ "Bubble tea":["Quick-cook tapioca pearls","Milk tea or fruit juice","Wide straws","Kettle"]};
+const foodItems=n=>(FOOD[n]||[]).slice(0,-1).filter(Boolean);
+const foodEquip=n=>(FOOD[n]||[]).slice(-1)[0]||"";
+const TYPES=[["make","Make and sell","Craft items made by your team"],["food","Food or drink","Easy Asian snacks and drinks"],["act","Have-a-go activity","A game or activity people pay to try"]];
+const VIAB=[["safe","It is safe, and our teacher will approve it."],["time","We can make enough in the class time we have."],["budget","The materials are cheap enough to make a profit."],["want","Year 9 students would actually want to buy or try it."],["link","It clearly links to our Asian country."],["unique","It is different enough from what other teams might sell."]];
+const STALL=[["sign","A price sign customers can read from a distance"],["poster","A poster with our business name and slogan"],["decor","Decorations that show our country"],["float","A float (coins for change) and a money tin"],["tally","A tally sheet to record every sale"],["roster","A roster so everyone knows when they are on the stall"],["bags","Cups, bags or napkins so customers can carry it away"]];
+const FOODCHK=[["allergy","We have checked our ingredients for common allergens (nuts, milk, egg, gluten, seafood)."],["rules","We have checked our food idea with our teacher against school food rules."],["hygiene","We will wash hands, wear gloves and tie back long hair."],["equip","We know what equipment we need and our teacher has said we can use it."],["temp","We have a plan to keep cold food cold and hot food hot."]];
+const WHO=["Teacher to buy","We'll bring it","Already have"];
+
+/* ---------- state ---------- */
+const KEY="gmc-planner-v1";
+const blank=()=>({step:0,team:"",cls:"",members:[{name:"",role:"Team leader"},{name:"",role:"Finance"},{name:"",role:"Marketing"}],country:"",otherCountry:"",type:"",starter:"",product:"",link:"",customers:"",viab:{},shop:[{item:"",qty:"",cost:"",who:""}],cap:"",units:30,price:2,sales:25,survey:Array(10).fill(0),mins:"",makers:"",lessonMins:40,when:"",jobs:{},foodChk:{},allergens:"",bizName:"",slogan:"",decor:"",stall:{},hook:"",special:"",cta:""});
+let S=blank();
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}renderSteps();renderTag()}
+
+/* ---------- derived ---------- */
+const lineTotal=r=>r.who==="Already have"?0:(+r.qty||0)*(+r.cost||0);
+const totalCost=()=>S.shop.reduce((n,r)=>n+lineTotal(r),0);
+const teacherCost=()=>S.shop.filter(r=>r.who==="Teacher to buy").reduce((n,r)=>n+lineTotal(r),0);
+const countryName=()=>S.country==="Other"?(S.otherCountry||"another Asian country"):S.country;
+const isFood=()=>S.type==="food";
+const filledShop=()=>S.shop.filter(r=>r.item.trim());
+
+/* ---------- steps nav ---------- */
+const STEPS=["Team","Country","Idea","Shopping","Price","Making","Stall","Our plan"];
+const DONE=[
+ ()=>S.team.trim()&&S.members.filter(m=>m.name.trim()).length>=2,
+ ()=>S.country&&(S.country!=="Other"||S.otherCountry.trim()),
+ ()=>S.type&&S.product.trim()&&S.link.trim()&&S.customers.trim()&&VIAB.every(v=>S.viab[v[0]]),
+ ()=>filledShop().length>=2&&filledShop().every(r=>r.who&&(r.who==="Already have"||(+r.qty>0&&r.cost!==""))),
+ ()=>+S.price>0&&+S.units>0&&S.survey.some(x=>x),
+ ()=>+S.mins>0&&+S.makers>0&&S.when&&(!isFood()||FOODCHK.every(c=>S.foodChk[c[0]])),
+ ()=>S.bizName.trim()&&S.slogan.trim()&&S.hook.trim()&&STALL.filter(c=>S.stall[c[0]]).length>=5,
+ ()=>false];
+function renderSteps(){const nav=$("#steps");if(!nav.children.length)nav.innerHTML=STEPS.map((l,i)=>`<button data-step="${i}"><b></b>${l}</button>`).join("");
+  [...nav.children].forEach((b,i)=>{const d=i<7&&DONE[i]();b.classList.toggle("done",!!d);b.setAttribute("aria-current",S.step===i);b.firstChild.textContent=d?"✓":i+1})}
+function renderTag(){$("#teamTag").textContent=[S.bizName||S.team,S.cls].filter(Boolean).join(" · ")}
+function go(i){S.step=i;save();document.querySelectorAll(".page").forEach(p=>p.hidden=p.id!=="p-"+i);RENDER[i]&&RENDER[i]();window.scrollTo({top:0,behavior:"smooth"})}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)go(+b.dataset.step)});
+
+/* generic text fields */
+function bindFields(){document.querySelectorAll("[data-f]").forEach(el=>{el.value=S[el.dataset.f]??"";})}
+document.addEventListener("input",e=>{const f=e.target.dataset&&e.target.dataset.f;if(!f)return;S[f]=e.target.value;save();LIVE[f]&&LIVE[f]()});
+document.addEventListener("change",e=>{const f=e.target.dataset&&e.target.dataset.f;if(!f)return;S[f]=e.target.value;save();LIVE[f]&&LIVE[f]()});
+const LIVE={};
+
+/* ---------- 0 team ---------- */
+$("#roleInfo").innerHTML=ROLES.map(r=>`<div class="role"><b>${r[0]}</b>${r[1]}</div>`).join("");
+function renderMembers(){$("#members").innerHTML=S.members.map((m,i)=>`<div class="mem"><input type="text" data-m="${i}" value="${esc(m.name)}" placeholder="Name" aria-label="Member ${i+1} name"><select data-mr="${i}" aria-label="Role">${ROLES.map(r=>`<option${m.role===r[0]?" selected":""}>${r[0]}</option>`).join("")}<option${m.role==="Helper"?" selected":""}>Helper</option></select>${S.members.length>1?`<button class="x" data-mx="${i}" aria-label="Remove member">×</button>`:"<span></span>"}</div>`).join("")}
+$("#members").addEventListener("input",e=>{const i=e.target.dataset.m;if(i!=null){S.members[i].name=e.target.value;save()}});
+$("#members").addEventListener("change",e=>{const i=e.target.dataset.mr;if(i!=null){S.members[i].role=e.target.value;save()}});
+$("#members").addEventListener("click",e=>{const i=e.target.dataset.mx;if(i!=null){S.members.splice(i,1);save();renderMembers()}});
+$("#addMem").onclick=()=>{if(S.members.length<6){S.members.push({name:"",role:"Helper"});save();renderMembers()}};
+
+/* ---------- 1 country ---------- */
+function renderCountries(){
+  $("#countries").innerHTML=Object.keys(COUNTRIES).map(c=>`<button class="ctry" data-c="${c}" aria-pressed="${S.country===c}"><span>${COUNTRIES[c].f}</span>${c}</button>`).join("")+`<button class="ctry" data-c="Other" aria-pressed="${S.country==="Other"}"><span>🌏</span>Other</button>`;
+  $("#otherWrap").hidden=S.country!=="Other";
+  const c=COUNTRIES[S.country];$("#starterCard").hidden=!c;
+  if(c){$("#starterH").textContent=`Idea starters: ${S.country}`;
+    $("#starters").innerHTML=[["Make and sell",c.make],["Food or drink",c.food],["Have-a-go activity",c.act]].map(([h,l])=>`<div><h3>${h}</h3><ul class="small" style="margin:0;padding-left:1.1em">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+}
+$("#countries").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;if(S.country!==b.dataset.c){S.country=b.dataset.c;S.starter=""}save();renderCountries()});
+
+/* ---------- 2 idea ---------- */
+function renderIdea(){
+  $("#types").innerHTML=TYPES.map(t=>`<button class="type" data-t="${t[0]}" aria-pressed="${S.type===t[0]}"><b>${t[1]}</b><span>${t[2]}</span></button>`).join("");
+  const c=COUNTRIES[S.country];let h="";
+  if(!S.type)h=`<p class="muted">Choose a stall type above to see ideas.</p>`;
+  else if(S.type==="food"){
+    const rows=Object.keys(FOOD).filter(f=>!c||c.food.includes(f));
+    const others=c?Object.keys(FOOD).filter(f=>!c.food.includes(f)):[];
+    const tr=f=>`<tr><td><button class="chip" data-s="${esc(f)}" aria-pressed="${S.starter===f}">${esc(f)}</button></td><td>${esc(foodItems(f).join(", "))}</td><td><span class="eq">${esc(foodEquip(f))}</span></td></tr>`;
+    h=`<h2>Easy food ideas${c?" from "+esc(S.country):""}</h2><p class="small muted">Tap one to use it, or write your own below.</p><div class="tablewrap"><table class="foodtbl"><tr><th>Food or drink</th><th>What you need</th><th>Equipment</th></tr>${rows.map(tr).join("")}</table></div>${others.length?`<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:700">Show food ideas from other countries</summary><div class="tablewrap"><table class="foodtbl">${others.map(tr).join("")}</table></div></details>`:""}`;
+  }else{
+    const list=c?c[S.type]:Object.values(COUNTRIES).flatMap(x=>x[S.type]);
+    h=`<h2>${S.type==="make"?"Things to make and sell":"Have-a-go activities"}${c?" from "+esc(S.country):""}</h2><p class="small muted">Tap one to use it, or write your own below.</p>${list.map(x=>`<button class="chip" data-s="${esc(x)}" aria-pressed="${S.starter===x}">${esc(x)}</button>`).join("")}`;
+  }
+  $("#ideaPick").innerHTML=h;
+  $("#viab").innerHTML=VIAB.map(v=>`<label class="check ${S.viab[v[0]]?"on":""}"><input type="checkbox" data-v="${v[0]}"${S.viab[v[0]]?" checked":""}><span>${v[1]}</span></label>`).join("");
+}
+$("#types").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;S.type=b.dataset.t;S.starter="";save();renderIdea()});
+$("#ideaPick").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;S.starter=b.dataset.s;if(!S.product.trim()||Object.keys(FOOD).includes(S.product)||Object.values(COUNTRIES).some(c=>[...c.make,...c.act].includes(S.product)))S.product=S.starter;save();bindFields();renderIdea()});
+$("#viab").addEventListener("change",e=>{const k=e.target.dataset.v;if(!k)return;S.viab[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
+
+/* ---------- 3 shopping ---------- */
+function renderShop(){
+  $("#shop").innerHTML=`<thead><tr><th>Item</th><th>Quantity</th><th>Cost each ($)</th><th>Total</th><th>Who is getting it?</th><th></th></tr></thead><tbody>${S.shop.map((r,i)=>`<tr><td><input type="text" data-s="${i}" data-k="item" value="${esc(r.item)}" placeholder="e.g. Canned mango pulp" aria-label="Item"></td><td><input type="number" min="0" data-s="${i}" data-k="qty" value="${esc(r.qty)}" aria-label="Quantity"></td><td><input type="number" min="0" step="0.05" data-s="${i}" data-k="cost" value="${esc(r.cost)}" aria-label="Cost each"></td><td class="tot" id="lt-${i}">${money(lineTotal(r))}</td><td><select data-s="${i}" data-k="who" aria-label="Who is getting it"><option value="">choose…</option>${WHO.map(w=>`<option${r.who===w?" selected":""}>${w}</option>`).join("")}</select></td><td><button class="x" data-sx="${i}" aria-label="Remove item">×</button></td></tr>`).join("")}</tbody><tfoot><tr><td colspan="3" style="text-align:right">Total cost</td><td class="tot" id="shopTot">${money(totalCost())}</td><td colspan="2" class="small" id="shopTeach">Teacher buying: ${money(teacherCost())}</td></tr></tfoot>`;
+  const items=S.type==="food"&&FOOD[S.starter]?foodItems(S.starter):[];
+  $("#suggestCard").hidden=!items.length;
+  if(items.length)$("#suggestTxt").innerHTML=`Making <b>${esc(S.starter)}</b>? We can add the usual ingredients to your list. You still need the quantities and prices.`;
+  shopAlerts();
+}
+function shopAlerts(){
+  const t=totalCost(),cap=+S.cap,a=[];
+  if(cap&&t>cap)a.push(`<div class="alert bad">You are ${money(t-cap)} over your spending limit. Cut items, use cheaper options or make fewer.</div>`);
+  else if(cap&&t)a.push(`<div class="alert good">Within budget: ${money(cap-t)} left to spend.</div>`);
+  const noWho=filledShop().filter(r=>!r.who).length;if(noWho)a.push(`<div class="alert warn">${noWho} item${noWho>1?"s":""} still need${noWho>1?"":"s"} someone to get ${noWho>1?"them":"it"}.</div>`);
+  const noPrice=filledShop().filter(r=>r.who!=="Already have"&&(r.cost===""||!(+r.qty>0))).length;if(noPrice)a.push(`<div class="alert warn">${noPrice} item${noPrice>1?"s are":" is"} missing a quantity or price.</div>`);
+  $("#shopAlerts").innerHTML=a.join("");
+}
+$("#shop").addEventListener("input",e=>{const i=e.target.dataset.s,k=e.target.dataset.k;if(i==null||!k)return;S.shop[i][k]=e.target.value;save();$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="Teacher buying: "+money(teacherCost());shopAlerts()});
+$("#shop").addEventListener("change",e=>{const i=e.target.dataset.s;if(i!=null&&e.target.dataset.k==="who"){$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="Teacher buying: "+money(teacherCost());shopAlerts()}});
+$("#shop").addEventListener("click",e=>{const i=e.target.dataset.sx;if(i==null)return;S.shop.splice(i,1);if(!S.shop.length)S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop()});
+$("#addRow").onclick=()=>{S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop();const ins=document.querySelectorAll('#shop input[data-k="item"]');ins[ins.length-1].focus()};
+$("#suggestBtn").onclick=()=>{const have=S.shop.map(r=>r.item.trim().toLowerCase());S.shop=S.shop.filter(r=>r.item.trim()||r.qty||r.cost);foodItems(S.starter).forEach(it=>{if(!have.includes(it.toLowerCase()))S.shop.push({item:it,qty:"",cost:"",who:""})});if(!S.shop.length)S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop()};
+LIVE.cap=shopAlerts;
+
+/* ---------- 4 price ---------- */
+function syncPrice(){["units","price","sales"].forEach(k=>{document.querySelector(`[data-n="${k}"]`).value=S[k];document.querySelector(`[data-r="${k}"]`).value=S[k]});calc()}
+function calc(){
+  const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,unit=u?tc/u:0,inc=p*s,pro=inc-tc;
+  $("#mCost").innerHTML=money(tc)+"<small>total cost</small>";$("#mUnit").innerHTML=money(unit)+"<small>cost to make one</small>";
+  $("#mInc").innerHTML=money(inc)+"<small>expected income</small>";$("#mPro").innerHTML=money(pro)+`<small>expected ${pro<0?"loss":"profit"}</small>`;
+  $("#mPro").className="readout "+(pro>0?"pos":pro<0?"neg":"");
+  $("#mWork").innerHTML=`Cost to make one: ${money(tc)} ÷ ${u} = ${money(unit)}. Income: ${money(p)} × ${s} = ${money(inc)}. Profit: ${money(inc)} − ${money(tc)} = ${money(pro)}.`;
+  const a=[];
+  if(!tc)a.push(`<div class="alert warn">Your shopping list has no costs yet. Go back to Step 4 so these numbers mean something.</div>`);
+  if(p&&unit&&p<unit)a.push(`<div class="alert bad">Your price is less than it costs to make one. You lose money on every sale.</div>`);
+  if(s>u)a.push(`<div class="alert bad">You can't sell ${s} if you only make ${u}.</div>`);
+  if(p&&tc){const be=Math.ceil(tc/p);a.push(`<div class="alert ${be>u?"bad":"good"}">Break even: you need to sell <b>${be}</b> to cover your costs.${be>u?" That's more than you are making!":""}</div>`)}
+  if(p>5)a.push(`<div class="alert warn">${money(p)} is a lot for a student at lunch. Check your survey results.</div>`);
+  $("#priceAlerts").innerHTML=a.join("");
+  $("#svPrice").textContent=money(p);$("#svProd").textContent=S.product||"our product";
+}
+document.querySelectorAll("[data-r],[data-n]").forEach(el=>el.addEventListener("input",()=>{const k=el.dataset.r||el.dataset.n;S[k]=el.value===""?"":+el.value;save();const o=document.querySelector(el.dataset.r?`[data-n="${k}"]`:`[data-r="${k}"]`);o.value=S[k];calc()}));
+function renderSurvey(){$("#survey").innerHTML=S.survey.map((v,i)=>`<button data-sv="${i}" class="${v===1?"yes":v===2?"no":""}" aria-label="Person ${i+1}">${v===1?"Yes":v===2?"No":i+1}</button>`).join("");
+  const y=S.survey.filter(x=>x===1).length,n=S.survey.filter(x=>x===2).length,t=y+n;
+  $("#svRes").textContent=t?`${y} of ${t} said yes (${Math.round(y/t*100)}%). `+(t<10?"Keep asking.":y>=7?"Great: your price looks right.":y>=4?"Mixed: think about a slightly lower price or a deal.":"Most said no: your price may be too high, or the product needs work."):""}
+$("#survey").addEventListener("click",e=>{const i=e.target.closest("[data-sv]");if(!i)return;const k=+i.dataset.sv;S.survey[k]=(S.survey[k]+1)%3;save();renderSurvey()});
+
+/* ---------- 5 making ---------- */
+function timeCalc(){
+  const m=+S.mins||0,mk=+S.makers||0,lm=+S.lessonMins||0,u=+S.units||0,tot=m*u,les=mk&&lm?tot/(mk*lm):0;
+  $("#tTotal").innerHTML=`${Math.round(tot)} min<small>total making time (${u} × ${m} min)</small>`;
+  $("#tLessons").innerHTML=`${les?Math.ceil(les*10)/10:0}<small>lessons needed</small>`;
+  const a=[];if(les>3)a.push(`<div class="alert bad">That's a lot of lessons. Make fewer, find a faster way, or get more people making.</div>`);
+  else if(les>0)a.push(`<div class="alert good">Looks doable. Plan which lessons you will use.</div>`);
+  if(S.when==="On market day"&&m>2)a.push(`<div class="alert warn">At ${m} minutes each, a queue will build fast. Prepare some before the stall opens.</div>`);
+  $("#timeAlerts").innerHTML=a.join("");
+}
+LIVE.mins=LIVE.makers=LIVE.lessonMins=LIVE.when=timeCalc;
+function renderJobs(){const ms=S.members.filter(m=>m.name.trim());
+  $("#jobs").innerHTML=ms.length?ms.map(m=>`<label class="field">${esc(m.name)} <span class="hint">${esc(m.role)}</span><input type="text" data-j="${esc(m.name)}" value="${esc(S.jobs[m.name]||"")}" placeholder="e.g. Buy cups and straws, make the price sign"></label>`).join(""):`<p class="muted">Add your team members on Step 1 first.</p>`;
+  $("#foodSafe").hidden=!isFood();
+  $("#foodChecks").innerHTML=FOODCHK.map(c=>`<label class="check ${S.foodChk[c[0]]?"on":""}"><input type="checkbox" data-fc="${c[0]}"${S.foodChk[c[0]]?" checked":""}><span>${c[1]}</span></label>`).join("");
+  timeCalc()}
+$("#jobs").addEventListener("input",e=>{const n=e.target.dataset.j;if(n!=null){S.jobs[n]=e.target.value;save()}});
+$("#foodChecks").addEventListener("change",e=>{const k=e.target.dataset.fc;if(!k)return;S.foodChk[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
+
+/* ---------- 6 stall ---------- */
+function renderSign(){$("#signPrev").innerHTML=`<div class="small muted">${esc(countryName()||"Our country")} ${S.country&&COUNTRIES[S.country]?COUNTRIES[S.country].f:""}</div><div class="nm">${esc(S.bizName||"Business name")}</div><div><i>${esc(S.slogan||"Your slogan here")}</i></div><div style="margin-top:6px">${esc(S.product||"Your product")}</div><div class="pr">${money(+S.price||0)}</div>`}
+function renderPitch(){$("#pitchPrev").textContent=`${S.hook||"[Grab attention]"} Come to ${S.bizName||"[business name]"}! We've got ${S.product?S.product.charAt(0).toLowerCase()+S.product.slice(1):"[product]"} from ${countryName()||"[country]"}, just ${money(+S.price||0)}. ${S.special||"[What makes it special]"}. ${S.cta||"[Call to action]"}`}
+LIVE.bizName=LIVE.slogan=()=>{renderSign();renderPitch()};LIVE.hook=LIVE.special=LIVE.cta=renderPitch;
+function renderStall(){$("#stallChecks").innerHTML=STALL.map(c=>`<label class="check ${S.stall[c[0]]?"on":""}"><input type="checkbox" data-st="${c[0]}"${S.stall[c[0]]?" checked":""}><span>${c[1]}</span></label>`).join("")+(isFood()?`<p class="small muted" style="margin:4px 0 0">Food stall: put your ingredients and allergen list on the table too.</p>`:"");renderSign();renderPitch()}
+$("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!k)return;S.stall[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
+
+/* ---------- 7 summary ---------- */
+function shopText(){const rows=filledShop();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nTEACHER TO BUY:\n${rows.filter(r=>r.who==="Teacher to buy").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\n\nTEAM BRINGING:\n${rows.filter(r=>r.who==="We'll bring it").map(r=>`- ${r.qty} x ${r.item}`).join("\n")||"- nothing"}\n\nTeacher buying total: ${money(teacherCost())}\nTotal cost of all items: ${money(totalCost())}`}
+function renderSummary(){
+  $("#ready").innerHTML=STEPS.slice(0,7).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
+  const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
+  const rows=filledShop();
+  $("#summary").innerHTML=`
+   <div class="row" style="justify-content:space-between;align-items:flex-start"><div><div class="eyebrow">Global Market Challenge · Product plan</div><h2 style="font-size:28px;margin:0">${esc(S.bizName||S.team||"Our team")}</h2><div class="muted">${esc(S.slogan)}</div></div><div class="muted small" style="text-align:right">${esc(S.cls)}<br>${new Date().toLocaleDateString("en-AU")}</div></div>
+   <div class="sumgrid" style="margin-top:14px">
+    <div><h3>Team</h3>${S.members.filter(m=>m.name.trim()).map(m=>`${esc(m.name)} <span class="muted small">(${esc(m.role)})</span>`).join("<br>")||"<i>not filled in</i>"}</div>
+    <div><h3>Country and product</h3><b>${esc(countryName()||"?")}</b> · ${esc((TYPES.find(x=>x[0]===S.type)||[,""])[1])}<br>${esc(S.product||"no product yet")}</div>
+    <div><h3>Link to country</h3>${esc(S.link)||"<i>not filled in</i>"}</div>
+    <div><h3>Customers</h3>${esc(S.customers)||"<i>not filled in</i>"}</div>
+   </div>
+   <h3 style="margin-top:16px">Shopping list</h3>
+   <div class="tablewrap"><table class="shop"><tr><th>Item</th><th>Qty</th><th>Each</th><th>Total</th><th>Who</th></tr>${rows.map(r=>`<tr><td>${esc(r.item)}</td><td>${esc(r.qty)}</td><td>${r.who==="Already have"?"–":money(+r.cost||0)}</td><td>${money(lineTotal(r))}</td><td>${esc(r.who)}</td></tr>`).join("")||`<tr><td colspan="5"><i>empty</i></td></tr>`}<tr><td colspan="3" style="text-align:right"><b>Total cost</b></td><td><b>${money(tc)}</b></td><td class="small">Teacher buying: ${money(teacherCost())}${+S.cap?`<br>Limit: ${money(+S.cap)}`:""}</td></tr></table></div>
+   <div class="sumgrid" style="margin-top:14px">
+    <div><h3>Money</h3>Make <b>${u}</b> · Price <b>${money(p)}</b> · Expect to sell <b>${s}</b><br>Cost to make one: ${money(u?tc/u:0)}<br>Expected income: ${money(p*s)}<br><b>Expected ${pro<0?"loss":"profit"}: ${money(pro)}</b>${p&&tc?`<br>Break even at ${Math.ceil(tc/p)} sales`:""}</div>
+    <div><h3>Price survey</h3>${t?`${y} of ${t} people said yes at ${money(p)}`:"<i>not done</i>"}</div>
+    <div><h3>Making plan</h3>${S.mins?`${S.mins} min each · ${S.makers||"?"} making · ${Math.round((+S.mins||0)*u)} min total`:"<i>not filled in</i>"}<br>${esc(S.when)}</div>
+    <div><h3>Jobs</h3>${Object.entries(S.jobs).filter(([n,j])=>j.trim()&&S.members.some(m=>m.name===n)).map(([n,j])=>`<b>${esc(n)}:</b> ${esc(j)}`).join("<br>")||"<i>not filled in</i>"}</div>
+    ${isFood()?`<div><h3>Food safety</h3>${FOODCHK.filter(c=>S.foodChk[c[0]]).length} of ${FOODCHK.length} checks done<br>Allergens: ${esc(S.allergens)||"<i>not listed</i>"}</div>`:""}
+    <div><h3>Stall</h3>${esc(S.decor)||"<i>no decorations planned</i>"}<br><span class="small muted">${STALL.filter(c=>S.stall[c[0]]).length} of ${STALL.length} stall items planned</span></div>
+   </div>
+   <h3 style="margin-top:16px">Pitch</h3><div class="pitch" style="font-size:16px">${esc($("#pitchPrev").textContent)}</div>
+   <div class="sumgrid" style="margin-top:16px"><div style="min-height:70px"><h3>Teacher approval</h3>Approved: Yes / No &nbsp; Signed: ____________</div><div><h3>Teacher notes</h3></div></div>`;
+}
+$("#printBtn").onclick=()=>{renderSummary();window.print()};
+$("#copyShop").onclick=async()=>{const t=shopText();try{await navigator.clipboard.writeText(t);$("#copyMsg").textContent="Copied! Paste it into an email or Teams message to your teacher."}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");$("#copyMsg").textContent="Copied!"}catch(_){$("#copyMsg").textContent="Couldn't copy. Print the plan instead."}ta.remove()}};
+$("#saveFile").onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").toLowerCase())+"-plan.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);S.step=7;save();bindFields();renderMembers();go(7);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
+$("#resetBtn").onclick=()=>{if(confirm("Clear this plan and start again? Save it to a file first if you want to keep it.")){S=blank();save();bindFields();renderMembers();go(0)}};
+
+const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderJobs,6:renderStall,7:renderSummary};
+bindFields();renderMembers();go(S.step||0);
+</script>
+</body>
+</html>
