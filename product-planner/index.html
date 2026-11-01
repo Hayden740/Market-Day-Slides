@@ -205,7 +205,9 @@ input[type=range]{width:100%;accent-color:var(--coral)}
         <button class="btn sm" id="addRow" style="margin-top:10px">+ Add an item</button>
       </div>
       <div class="card">
-        <label class="field">Spending limit <span class="hint">Ask your teacher if there is a limit. Leave blank if there isn't.</span><span class="row" style="font-weight:400">$ <input type="number" min="0" step="1" data-f="cap"></span></label>
+        <h2>Your $10 school budget</h2>
+        <p class="small muted">The school will buy up to <b>$10</b> of items for your team (mark them <b>School buys</b>). Anything over that, your team pays for (mark it <b>We'll buy it</b>).</p>
+        <div class="money" id="budget"></div>
         <div class="alerts" id="shopAlerts" style="margin-top:10px"></div>
       </div>
       <div class="card small muted bl-blue">Don't forget the extras: cups, napkins, bags, sticky tape, string, price signs, gloves for food, and anything to decorate the stall. Things you already own still go on the list, marked <b>Already have</b>, but they cost $0.</div>
@@ -358,19 +360,22 @@ const TYPES=[["make","Make and sell","Craft items made by your team"],["food","F
 const VIAB=[["safe","It is safe, and our teacher will approve it."],["time","We can make enough in the class time we have."],["budget","The materials are cheap enough to make a profit."],["want","Year 9 students would actually want to buy or try it."],["link","It clearly links to our Asian country."],["unique","It is different enough from what other teams might sell."]];
 const STALL=[["sign","A price sign customers can read from a distance"],["poster","A poster with our business name and slogan"],["decor","Decorations that show our country"],["float","A float (coins for change) and a money tin"],["tally","A tally sheet to record every sale"],["roster","A roster so everyone knows when they are on the stall"],["bags","Cups, bags or napkins so customers can carry it away"]];
 const FOODCHK=[["allergy","We have checked our ingredients for common allergens (nuts, milk, egg, gluten, seafood)."],["rules","We have checked our food idea with our teacher against school food rules."],["hygiene","We will wash hands, wear gloves and tie back long hair."],["equip","We know what equipment we need and our teacher has said we can use it."],["temp","We have a plan to keep cold food cold and hot food hot."]];
-const WHO=["Teacher to buy","We'll bring it","Already have"];
+const WHO=["School buys","We'll buy it","Already have"];
+const BUDGET=10;
 
 /* ---------- state ---------- */
 const KEY="gmc-planner-v1";
-const blank=()=>({step:0,team:"",cls:"",members:[{name:"",role:"Team leader"},{name:"",role:"Finance"},{name:"",role:"Marketing"}],country:"",otherCountry:"",type:"",starter:"",product:"",link:"",customers:"",viab:{},shop:[{item:"",qty:"",cost:"",who:""}],cap:"",units:30,price:2,sales:25,survey:Array(10).fill(0),mins:"",makers:"",lessonMins:40,when:"",jobs:{},foodChk:{},allergens:"",bizName:"",slogan:"",decor:"",stall:{},hook:"",special:"",cta:""});
+const blank=()=>({step:0,team:"",cls:"",members:[{name:"",role:"Team leader"},{name:"",role:"Finance"},{name:"",role:"Marketing"}],country:"",otherCountry:"",type:"",starter:"",product:"",link:"",customers:"",viab:{},shop:[{item:"",qty:"",cost:"",who:""}],units:30,price:2,sales:25,survey:Array(10).fill(0),mins:"",makers:"",lessonMins:40,when:"",jobs:{},foodChk:{},allergens:"",bizName:"",slogan:"",decor:"",stall:{},hook:"",special:"",cta:""});
 let S=blank();
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw))}catch(e){}
+function migrate(){S.shop.forEach(r=>{if(r.who==="Teacher to buy")r.who="School buys";if(r.who==="We'll bring it")r.who="We'll buy it"})}migrate();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}renderSteps();renderTag()}
 
 /* ---------- derived ---------- */
 const lineTotal=r=>r.who==="Already have"?0:(+r.qty||0)*(+r.cost||0);
+const teamCost=()=>S.shop.filter(r=>r.who==="We'll buy it").reduce((n,r)=>n+lineTotal(r),0);
 const totalCost=()=>S.shop.reduce((n,r)=>n+lineTotal(r),0);
-const teacherCost=()=>S.shop.filter(r=>r.who==="Teacher to buy").reduce((n,r)=>n+lineTotal(r),0);
+const schoolCost=()=>S.shop.filter(r=>r.who==="School buys").reduce((n,r)=>n+lineTotal(r),0);
 const countryName=()=>S.country==="Other"?(S.otherCountry||"another Asian country"):S.country;
 const isFood=()=>S.type==="food";
 const filledShop=()=>S.shop.filter(r=>r.item.trim());
@@ -381,7 +386,7 @@ const DONE=[
  ()=>S.team.trim()&&S.members.filter(m=>m.name.trim()).length>=2,
  ()=>S.country&&(S.country!=="Other"||S.otherCountry.trim()),
  ()=>S.type&&S.product.trim()&&S.link.trim()&&VIAB.every(v=>S.viab[v[0]]),
- ()=>filledShop().length>=2&&filledShop().every(r=>r.who&&(r.who==="Already have"||(+r.qty>0&&r.cost!==""))),
+ ()=>filledShop().length>=2&&schoolCost()<=BUDGET&&filledShop().every(r=>r.who&&(r.who==="Already have"||(+r.qty>0&&r.cost!==""))),
  ()=>+S.price>0&&+S.units>0&&S.survey.some(x=>x),
  ()=>+S.mins>0&&+S.makers>0&&S.when&&(!isFood()||FOODCHK.every(c=>S.foodChk[c[0]])),
  ()=>S.bizName.trim()&&S.slogan.trim()&&S.hook.trim()&&STALL.filter(c=>S.stall[c[0]]).length>=5,
@@ -439,26 +444,27 @@ $("#viab").addEventListener("change",e=>{const k=e.target.dataset.v;if(!k)return
 
 /* ---------- 3 shopping ---------- */
 function renderShop(){
-  $("#shop").innerHTML=`<thead><tr><th>Item</th><th>Quantity</th><th>Cost each ($)</th><th>Total</th><th>Who is getting it?</th><th></th></tr></thead><tbody>${S.shop.map((r,i)=>`<tr><td><input type="text" data-s="${i}" data-k="item" value="${esc(r.item)}" placeholder="e.g. Canned mango pulp" aria-label="Item"></td><td><input type="number" min="0" data-s="${i}" data-k="qty" value="${esc(r.qty)}" aria-label="Quantity"></td><td><input type="number" min="0" step="0.05" data-s="${i}" data-k="cost" value="${esc(r.cost)}" aria-label="Cost each"></td><td class="tot" id="lt-${i}">${money(lineTotal(r))}</td><td><select data-s="${i}" data-k="who" aria-label="Who is getting it"><option value="">choose…</option>${WHO.map(w=>`<option${r.who===w?" selected":""}>${w}</option>`).join("")}</select></td><td><button class="x" data-sx="${i}" aria-label="Remove item">×</button></td></tr>`).join("")}</tbody><tfoot><tr><td colspan="3" style="text-align:right">Total cost</td><td class="tot" id="shopTot">${money(totalCost())}</td><td colspan="2" class="small" id="shopTeach">Teacher buying: ${money(teacherCost())}</td></tr></tfoot>`;
+  $("#shop").innerHTML=`<thead><tr><th>Item</th><th>Quantity</th><th>Cost each ($)</th><th>Total</th><th>Who is getting it?</th><th></th></tr></thead><tbody>${S.shop.map((r,i)=>`<tr><td><input type="text" data-s="${i}" data-k="item" value="${esc(r.item)}" placeholder="e.g. Canned mango pulp" aria-label="Item"></td><td><input type="number" min="0" data-s="${i}" data-k="qty" value="${esc(r.qty)}" aria-label="Quantity"></td><td><input type="number" min="0" step="0.05" data-s="${i}" data-k="cost" value="${esc(r.cost)}" aria-label="Cost each"></td><td class="tot" id="lt-${i}">${money(lineTotal(r))}</td><td><select data-s="${i}" data-k="who" aria-label="Who is getting it"><option value="">choose…</option>${WHO.map(w=>`<option${r.who===w?" selected":""}>${w}</option>`).join("")}</select></td><td><button class="x" data-sx="${i}" aria-label="Remove item">×</button></td></tr>`).join("")}</tbody><tfoot><tr><td colspan="3" style="text-align:right">Total cost</td><td class="tot" id="shopTot">${money(totalCost())}</td><td colspan="2" class="small" id="shopTeach">School buys: ${money(schoolCost())} of $10</td></tr></tfoot>`;
   const items=S.type==="food"&&FOOD[S.starter]?foodItems(S.starter):[];
   $("#suggestCard").hidden=!items.length;
   if(items.length)$("#suggestTxt").innerHTML=`Making <b>${esc(S.starter)}</b>? We can add the usual ingredients to your list. You still need the quantities and prices.`;
   shopAlerts();
 }
 function shopAlerts(){
-  const t=totalCost(),cap=+S.cap,a=[];
-  if(cap&&t>cap)a.push(`<div class="alert bad">You are ${money(t-cap)} over your spending limit. Cut items, use cheaper options or make fewer.</div>`);
-  else if(cap&&t)a.push(`<div class="alert good">Within budget: ${money(cap-t)} left to spend.</div>`);
+  const sc=schoolCost(),tm=teamCost(),left=BUDGET-sc,a=[];
+  $("#budget").innerHTML=`<div class="readout">${money(BUDGET)}<small>school budget</small></div><div class="readout ${sc>BUDGET?"neg":""}">${money(sc)}<small>school buys</small></div><div class="readout ${left<0?"neg":"pos"}">${money(Math.abs(left))}<small>${left<0?"over budget":"left to spend"}</small></div><div class="readout">${money(tm)}<small>team pays</small></div>`;
+  if(sc>BUDGET)a.push(`<div class="alert bad">School items come to ${money(sc)}, which is ${money(sc-BUDGET)} over the $10 budget. Change some items to <b>We'll buy it</b>, or choose cheaper options.</div>`);
+  else if(sc>0)a.push(`<div class="alert good">Within the school budget. ${left>0?money(left)+" left to spend.":"You've used all $10."}</div>`);
   const noWho=filledShop().filter(r=>!r.who).length;if(noWho)a.push(`<div class="alert warn">${noWho} item${noWho>1?"s":""} still need${noWho>1?"":"s"} someone to get ${noWho>1?"them":"it"}.</div>`);
   const noPrice=filledShop().filter(r=>r.who!=="Already have"&&(r.cost===""||!(+r.qty>0))).length;if(noPrice)a.push(`<div class="alert warn">${noPrice} item${noPrice>1?"s are":" is"} missing a quantity or price.</div>`);
   $("#shopAlerts").innerHTML=a.join("");
 }
-$("#shop").addEventListener("input",e=>{const i=e.target.dataset.s,k=e.target.dataset.k;if(i==null||!k)return;S.shop[i][k]=e.target.value;save();$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="Teacher buying: "+money(teacherCost());shopAlerts()});
-$("#shop").addEventListener("change",e=>{const i=e.target.dataset.s;if(i!=null&&e.target.dataset.k==="who"){$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="Teacher buying: "+money(teacherCost());shopAlerts()}});
+$("#shop").addEventListener("input",e=>{const i=e.target.dataset.s,k=e.target.dataset.k;if(i==null||!k)return;S.shop[i][k]=e.target.value;save();$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="School buys: "+money(schoolCost())+" of $10";shopAlerts()});
+$("#shop").addEventListener("change",e=>{const i=e.target.dataset.s;if(i!=null&&e.target.dataset.k==="who"){$("#lt-"+i).textContent=money(lineTotal(S.shop[i]));$("#shopTot").textContent=money(totalCost());$("#shopTeach").textContent="School buys: "+money(schoolCost())+" of $10";shopAlerts()}});
 $("#shop").addEventListener("click",e=>{const i=e.target.dataset.sx;if(i==null)return;S.shop.splice(i,1);if(!S.shop.length)S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop()});
 $("#addRow").onclick=()=>{S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop();const ins=document.querySelectorAll('#shop input[data-k="item"]');ins[ins.length-1].focus()};
 $("#suggestBtn").onclick=()=>{const have=S.shop.map(r=>r.item.trim().toLowerCase());S.shop=S.shop.filter(r=>r.item.trim()||r.qty||r.cost);foodItems(S.starter).forEach(it=>{if(!have.includes(it.toLowerCase()))S.shop.push({item:it,qty:"",cost:"",who:""})});if(!S.shop.length)S.shop.push({item:"",qty:"",cost:"",who:""});save();renderShop()};
-LIVE.cap=shopAlerts;
+
 
 /* ---------- 4 price ---------- */
 function syncPrice(){["units","price","sales"].forEach(k=>{document.querySelector(`[data-n="${k}"]`).value=S[k];document.querySelector(`[data-r="${k}"]`).value=S[k]});calc()}
@@ -510,7 +516,7 @@ function renderStall(){$("#stallChecks").innerHTML=STALL.map(c=>`<label class="c
 $("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!k)return;S.stall[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
 
 /* ---------- 7 summary ---------- */
-function shopText(){const rows=filledShop();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nTEACHER TO BUY:\n${rows.filter(r=>r.who==="Teacher to buy").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\n\nTEAM BRINGING:\n${rows.filter(r=>r.who==="We'll bring it").map(r=>`- ${r.qty} x ${r.item}`).join("\n")||"- nothing"}\n\nTeacher buying total: ${money(teacherCost())}\nTotal cost of all items: ${money(totalCost())}`}
+function shopText(){const rows=filledShop(),sc=schoolCost();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nSCHOOL TO BUY ($10 budget):\n${rows.filter(r=>r.who==="School buys").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nSchool total: ${money(sc)}${sc>BUDGET?` (OVER the $10 budget by ${money(sc-BUDGET)})`:""}\n\nTEAM BUYING:\n${rows.filter(r=>r.who==="We'll buy it").map(r=>`- ${r.qty} x ${r.item} (about ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nTeam total: ${money(teamCost())}\n\nTotal cost of all items: ${money(totalCost())}`}
 function renderSummary(){
   $("#ready").innerHTML=STEPS.slice(0,7).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
   const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
@@ -523,7 +529,7 @@ function renderSummary(){
     <div style="grid-column:1/-1"><h3>Link to country</h3>${esc(S.link)||"<i>not filled in</i>"}</div>
    </div>
    <h3 style="margin-top:16px">Shopping list</h3>
-   <div class="tablewrap"><table class="shop"><tr><th>Item</th><th>Qty</th><th>Each</th><th>Total</th><th>Who</th></tr>${rows.map(r=>`<tr><td>${esc(r.item)}</td><td>${esc(r.qty)}</td><td>${r.who==="Already have"?"–":money(+r.cost||0)}</td><td>${money(lineTotal(r))}</td><td>${esc(r.who)}</td></tr>`).join("")||`<tr><td colspan="5"><i>empty</i></td></tr>`}<tr><td colspan="3" style="text-align:right"><b>Total cost</b></td><td><b>${money(tc)}</b></td><td class="small">Teacher buying: ${money(teacherCost())}${+S.cap?`<br>Limit: ${money(+S.cap)}`:""}</td></tr></table></div>
+   <div class="tablewrap"><table class="shop"><tr><th>Item</th><th>Qty</th><th>Each</th><th>Total</th><th>Who</th></tr>${rows.map(r=>`<tr><td>${esc(r.item)}</td><td>${esc(r.qty)}</td><td>${r.who==="Already have"?"–":money(+r.cost||0)}</td><td>${money(lineTotal(r))}</td><td>${esc(r.who)}</td></tr>`).join("")||`<tr><td colspan="5"><i>empty</i></td></tr>`}<tr><td colspan="3" style="text-align:right"><b>Total cost</b></td><td><b>${money(tc)}</b></td><td class="small">School buys: ${money(schoolCost())} of $10<br>Team pays: ${money(teamCost())}</td></tr></table></div>
    <div class="sumgrid" style="margin-top:14px">
     <div><h3>Money</h3>Make <b>${u}</b> · Price <b>${money(p)}</b> · Expect to sell <b>${s}</b><br>Cost to make one: ${money(u?tc/u:0)}<br>Expected income: ${money(p*s)}<br><b>Expected ${pro<0?"loss":"profit"}: ${money(pro)}</b>${p&&tc?`<br>Break even at ${Math.ceil(tc/p)} sales`:""}</div>
     <div><h3>Price survey</h3>${t?`${y} of ${t} people said yes at ${money(p)}`:"<i>not done</i>"}</div>
@@ -538,7 +544,7 @@ function renderSummary(){
 $("#printBtn").onclick=()=>{renderSummary();window.print()};
 $("#copyShop").onclick=async()=>{const t=shopText();try{await navigator.clipboard.writeText(t);$("#copyMsg").textContent="Copied! Paste it into an email or Teams message to your teacher."}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");$("#copyMsg").textContent="Copied!"}catch(_){$("#copyMsg").textContent="Couldn't copy. Print the plan instead."}ta.remove()}};
 $("#saveFile").onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").toLowerCase())+"-plan.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
-$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);S.step=7;save();bindFields();renderMembers();go(7);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
+$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.step=7;save();bindFields();renderMembers();go(7);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
 $("#resetBtn").onclick=()=>{if(confirm("Clear this plan and start again? Save it to a file first if you want to keep it.")){S=blank();save();bindFields();renderMembers();go(0)}};
 
 const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderJobs,6:renderStall,7:renderSummary};
