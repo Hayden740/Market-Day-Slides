@@ -138,7 +138,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
 .howto>div{border:1px solid var(--line);border-radius:12px;padding:12px}
 .howto b.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--f-mono);margin-right:6px}
 @media (max-width:860px){.howto{grid-template-columns:1fr}}
-@media (min-width:861px){.savebar{position:sticky;top:8px;z-index:5}}
+
 .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .sumgrid>div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .sumgrid h3{font-size:13px;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
@@ -159,24 +159,6 @@ input[type=range]{width:100%;accent-color:var(--coral)}
     <span class="teamtag" id="teamTag"></span>
   </div>
   <nav class="steps" id="steps" aria-label="Steps"></nav>
-  <div class="savebar noprint" id="savebar">
-    <div><b>💾 Using another computer later?</b> <span class="state" id="saveState"></span></div>
-    <div class="row">
-      <button class="btn primary" id="saveFile">💾 Save my work</button>
-      <label class="btn" style="display:inline-block;background:var(--surface)">📂 Open saved work<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
-      <button class="linkbtn" id="howBtn" aria-expanded="false">How does saving work?</button>
-    </div>
-  </div>
-  <div class="card noprint" id="howCard" hidden>
-    <h2>How to save your work and keep going on another computer</h2>
-    <div class="howto">
-      <div><b class="n">1</b><b>Save it</b><p class="small" style="margin-top:6px">Click <b>💾 Save my work</b>. A file ending in <b>-saved-work.json</b> goes into your <b>Downloads</b> folder.</p></div>
-      <div><b class="n">2</b><b>Keep it somewhere safe</b><p class="small" style="margin-top:6px">Move the file to your <b>OneDrive or Google Drive</b>, or email it to yourself. Every team member can have a copy.</p></div>
-      <div><b class="n">3</b><b>Open it anywhere</b><p class="small" style="margin-top:6px">On any computer, open this website, click <b>📂 Open saved work</b> and choose your file. Everything comes back.</p></div>
-    </div>
-    <p class="small muted" style="margin-top:10px">On the same computer, your work also saves by itself as you type. Save a file at the end of every lesson anyway, in case the computer is cleared. <button class="linkbtn" id="resetBtn">Start a brand new plan</button></p>
-  </div>
-
   <!-- 0 TEAM -->
   <section class="page" id="p-0">
     <div class="stack">
@@ -313,6 +295,23 @@ input[type=range]{width:100%;accent-color:var(--coral)}
         <p>This makes a PDF of your whole plan, including your shopping list. Hand it in to your teacher.</p>
         <div class="row"><button class="btn primary" id="pdfBtn">⬇ Download our plan (PDF)</button><button class="linkbtn" id="printBtn">Print instead</button></div>
         <p class="small muted" id="pdfMsg" style="margin-top:8px"></p>
+      </div>
+      <div class="savebar noprint" id="savebar">
+        <div><b>💾 Want to keep working on it later or on another computer?</b> <span class="state" id="saveState"></span></div>
+        <div class="row">
+          <button class="btn primary" id="saveFile">💾 Save my work</button>
+          <label class="btn" style="display:inline-block;background:var(--surface)">📂 Open saved work<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
+          <button class="linkbtn" id="howBtn" aria-expanded="false">How does saving work?</button>
+        </div>
+      </div>
+      <div class="card noprint" id="howCard" hidden>
+        <h2>How to save your work and keep going on another computer</h2>
+        <div class="howto">
+          <div><b class="n">1</b><b>Save it</b><p class="small" style="margin-top:6px">Click <b>💾 Save my work</b>. A file ending in <b>-saved-work.json</b> goes into your <b>Downloads</b> folder.</p></div>
+          <div><b class="n">2</b><b>Keep it somewhere safe</b><p class="small" style="margin-top:6px">Move the file to your <b>OneDrive or Google Drive</b>, or email it to yourself. Every team member can have a copy.</p></div>
+          <div><b class="n">3</b><b>Open it anywhere</b><p class="small" style="margin-top:6px">On any computer, open this website, click <b>📂 Open saved work</b> and choose your file. Everything comes back.</p></div>
+        </div>
+        <p class="small muted" style="margin-top:10px">On the same computer, your work also saves by itself as you type. Save a file at the end of every lesson anyway, in case the computer is cleared. <button class="linkbtn" id="resetBtn">Start a brand new plan</button></p>
       </div>
       <h2 class="noprint" style="font-family:var(--f-display);margin:6px 0 -4px">Preview</h2>
       <div class="card" id="summary"></div>
