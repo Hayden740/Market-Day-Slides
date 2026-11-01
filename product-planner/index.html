@@ -508,7 +508,7 @@ $("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!
 /* ---------- 7 summary ---------- */
 function renderSummary(){renderPitch();
   $("#ready").innerHTML=STEPS.slice(0,6).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
-  const miss=STEPS.slice(0,6).filter((l,i)=>!DONE[i]());$("#readyMsg").innerHTML=miss.length?`Go back and finish: <b>${miss.join(", ")}</b>. You can still submit, but your plan will show what is missing.`:`<span class="copied">Everything is complete. Download and send it!</span>`;
+  const miss=STEPS.slice(0,6).filter((l,i)=>!DONE[i]());$("#readyMsg").innerHTML=miss.length?`Go back and finish: <b>${miss.join(", ")}</b>. You can still submit, but your plan will show what is missing.`:`<span class="copied">Everything is complete. Download it and hand it in.</span>`;
   const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
   const rows=filledShop();
   $("#summary").innerHTML=`
@@ -529,7 +529,18 @@ function renderSummary(){renderPitch();
    <div class="sumgrid" style="margin-top:16px"><div style="min-height:70px"><h3>Teacher approval</h3>Approved: Yes / No &nbsp; Signed: ____________</div><div><h3>Teacher notes</h3></div></div>`;
 }
 
-/* ---------- submission: PDF + email ---------- */
+
+/* ---------- file saving: works on GitHub Pages and inside the Claude artifact viewer ---------- */
+const IN_VIEWER=!!(window.claude&&typeof window.claude.use==="function");
+const dlReady=IN_VIEWER?window.claude.use("downloads").catch(()=>null):Promise.resolve(null);
+async function offerFile(filename,data,mime){
+  const dl=await dlReady;
+  if(dl){try{await dl.save({filename,data});return "saved"}catch(e){return (e&&e.code)||"error"}}
+  if(IN_VIEWER)return "unavailable";
+  const b=data instanceof Blob?data:new Blob([data],{type:mime}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return "saved";
+}
+if(IN_VIEWER){const pb=document.getElementById("printBtn");if(pb)pb.hidden=true}
+/* ---------- submission: PDF ---------- */
 const L1=t=>String(t??"").replace(/[−–—]/g,"-").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,"x").replace(/[^\x00-\xFF]/g,"").trim();
 const pm=v=>(v<0?"-":"")+"$"+Math.abs(v).toFixed(2);
 const fileBase=()=>((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase()||"market-stall");
@@ -581,9 +592,10 @@ function buildPDF(){
   return d;
 }
 $("#pdfBtn").onclick=()=>{
-  if(!window.jspdf||!window.jspdf.jsPDF||!jsPDF_ok()){$("#pdfMsg").innerHTML="The PDF maker didn't load. Use <b>Print instead</b> and choose <b>Save as PDF</b>.";return}
-  try{renderSummary();buildPDF().save(fileBase()+"-plan.pdf");$("#pdfMsg").innerHTML=`<span class="copied">Downloaded <b>${esc(fileBase())}-plan.pdf</b> to your Downloads folder. Hand it in to your teacher.</span>`}
-  catch(e){$("#pdfMsg").innerHTML="Something went wrong making the PDF. Use <b>Print instead</b> and choose <b>Save as PDF</b>."}
+  if(!window.jspdf||!window.jspdf.jsPDF||!jsPDF_ok()){$("#pdfMsg").innerHTML="The PDF maker didn't load. Refresh the page and try again."+(IN_VIEWER?"":" Or use <b>Print instead</b> and choose <b>Save as PDF</b>.");return}
+  let blob;try{renderSummary();blob=buildPDF().output("blob")}catch(e){$("#pdfMsg").innerHTML="Something went wrong making the PDF. Try again, or tell your teacher.";return}
+  const name=fileBase()+"-plan.pdf";$("#pdfMsg").textContent="Getting your PDF ready…";
+  offerFile(name,blob,"application/pdf").then(r=>{$("#pdfMsg").innerHTML=r==="saved"?`<span class="copied">Downloaded <b>${esc(name)}</b>. Hand it in to your teacher.</span>`:r==="declined"?"Download cancelled. Click the button again when you're ready.":"Downloads don't work in this window. Open the planner in a normal browser tab and try again."})
 };
 function jsPDF_ok(){try{return typeof new window.jspdf.jsPDF().autoTable==="function"}catch(e){return false}}
 
@@ -594,13 +606,16 @@ function saveState(){const el=$("#saveState");if(!el)return;
   else if(S.dirty){el.className="state warn";el.textContent="You have changes since your last save. Save again before you leave!"}
   else{el.className="state ok";el.textContent="✓ Saved to a file at "+new Date(S.savedAt).toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"})+"."}}
 function flash(msg,cls){const el=$("#saveState");el.className="state "+(cls||"ok");el.textContent=msg}
-$("#saveFile").onclick=()=>{S.savedAt=Date.now();S.dirty=false;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
-  const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fileBase()+"-saved-work.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-  flash(`✓ Saved "${fileBase()}-saved-work.json" to your Downloads folder. Move it to your OneDrive, Google Drive or email.`)};
+$("#saveFile").onclick=()=>{const name=fileBase()+"-saved-work.json";flash("Saving…");
+  const snap=Object.assign({},S,{savedAt:Date.now(),dirty:false});
+  offerFile(name,JSON.stringify(snap,null,1),"application/json").then(r=>{
+    if(r==="saved"){S.savedAt=snap.savedAt;S.dirty=false;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}flash(`✓ Saved "${name}" to your Downloads folder. Move it to your OneDrive, Google Drive or email.`)}
+    else if(r==="declined")flash("Save cancelled. Your work is not saved to a file yet.","warn");
+    else flash("Saving files doesn't work in this window. Open the planner in a normal browser tab.","warn")})};
 $("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.dirty=false;if(S.step>6)S.step=6;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}bindFields();renderMembers();renderSteps();renderTag();go(S.step||0);flash(`✓ Opened your saved work: ${S.bizName||S.team||"your plan"}.`)}catch(_){flash("That file isn't a saved work file. Choose the file ending in -saved-work.json.","warn")}};r.readAsText(f);e.target.value=""};
 $("#openFromStart").onclick=()=>$("#loadFile").click();
 $("#howBtn").onclick=()=>{const c=$("#howCard"),open=c.hidden;c.hidden=!open;$("#howBtn").setAttribute("aria-expanded",open)};
-$("#resetBtn").onclick=()=>{if(confirm("Clear this plan and start again? Save it to a file first if you want to keep it.")){S=blank();save();bindFields();renderMembers();go(0)}};
+let resetArm=0;$("#resetBtn").onclick=()=>{const btn=$("#resetBtn");if(Date.now()-resetArm>5000){resetArm=Date.now();btn.textContent="Click again to clear everything (save first if you want to keep it)";setTimeout(()=>{btn.textContent="Start a brand new plan"},5000);return}resetArm=0;btn.textContent="Start a brand new plan";S=blank();save();bindFields();renderMembers();go(0);flash("Started a new plan.")};
 
 const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderStall,6:renderSummary};
 if(S.step>6)S.step=6;bindFields();renderMembers();go(S.step||0);
