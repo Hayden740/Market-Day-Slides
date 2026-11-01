@@ -278,22 +278,41 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 6 SUMMARY -->
   <section class="page" id="p-6" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 7 of 7</div><h1>Our plan</h1><p>Check everything is complete, then print it or save it as a PDF for your teacher. Copy your shopping list so your teacher knows what to buy.</p></header>
-      <div class="card noprint"><h2>Ready for approval?</h2><div class="ready" id="ready"></div></div>
-      <div class="card noprint row">
-        <button class="btn primary" id="printBtn">Print or save as PDF</button>
-        <button class="btn" id="copyShop">Copy shopping list for teacher</button>
-        <button class="btn" id="saveFile">Save plan to a file</button>
-        <label class="btn" style="display:inline-block">Open a saved plan<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
-        <span class="copied" id="copyMsg"></span>
+      <header><div class="eyebrow">Step 7 of 7</div><h1>Submit your plan</h1><p>This is your final page. Check everything is complete, download your plan, then email it to Mr Carter. Your shopping list is on the plan, so we know what to buy.</p></header>
+      <div class="card noprint"><h2>Ready to submit?</h2><div class="ready" id="ready"></div><p class="small muted" id="readyMsg" style="margin-top:10px"></p></div>
+      <div class="grid2 noprint">
+        <div class="card bl-coral">
+          <div class="eyebrow" style="color:var(--coral)">Part 1</div><h2>Download your plan</h2>
+          <p class="small">This saves a PDF of your whole plan, with your shopping list on the last page.</p>
+          <button class="btn primary" id="pdfBtn">⬇ Download our plan (PDF)</button>
+          <p class="small muted" id="pdfMsg" style="margin-top:8px"></p>
+        </div>
+        <div class="card bl-green">
+          <div class="eyebrow" style="color:var(--green)">Part 2</div><h2>Email it to Mr Carter</h2>
+          <p class="small">This opens an email with your shopping list already in it. <b>Attach the PDF you just downloaded</b> (it's in your Downloads folder), then press send.</p>
+          <button class="btn primary" id="mailBtn">✉ Email Mr Carter</button>
+          <p class="small muted" style="margin-top:8px">Email doesn't open? Send your PDF to <b id="tEmail"></b> another way, such as through your school email website.</p>
+        </div>
       </div>
+      <details class="card noprint small"><summary style="cursor:pointer;font-weight:700">More options</summary>
+        <div class="row" style="margin-top:10px">
+          <button class="btn sm" id="printBtn">Print instead</button>
+          <button class="btn sm" id="copyShop">Copy shopping list</button>
+          <button class="btn sm" id="saveFile">Save plan to keep working on another computer</button>
+          <label class="btn sm" style="display:inline-block">Open a saved plan<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
+          <span class="copied" id="copyMsg"></span>
+        </div>
+      </details>
+      <h2 class="noprint" style="font-family:var(--f-display);margin:6px 0 -4px">Preview</h2>
       <div class="card" id="summary"></div>
-      <div class="card noprint small muted">Working on a different computer next lesson? Use <b>Save plan to a file</b>, put it in your school drive or email it to yourself, then use <b>Open a saved plan</b> on the new computer. <button class="btn sm" id="resetBtn" style="margin-left:6px">Start a new plan</button></div>
+      <div class="card noprint small muted">Working on a different computer next lesson? Open <b>More options</b>, use <b>Save plan to keep working on another computer</b>, put the file in your school drive, then use <b>Open a saved plan</b> on the new computer. <button class="btn sm" id="resetBtn" style="margin-left:6px">Start a new plan</button></div>
       <div class="navrow"><button class="btn" data-step="5">← Back</button><span></span></div>
     </div>
   </section>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -480,6 +499,7 @@ $("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!
 function shopText(){const rows=filledShop(),sc=schoolCost();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nSCHOOL TO BUY ($10 budget):\n${rows.filter(r=>r.who==="School buys").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nSchool total: ${money(sc)}${sc>BUDGET?` (OVER the $10 budget by ${money(sc-BUDGET)})`:""}\n\nTEAM BUYING:\n${rows.filter(r=>r.who==="We'll buy it").map(r=>`- ${r.qty} x ${r.item} (about ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nTeam total: ${money(teamCost())}\n\nTotal cost of all items: ${money(totalCost())}`}
 function renderSummary(){
   $("#ready").innerHTML=STEPS.slice(0,6).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
+  const miss=STEPS.slice(0,6).filter((l,i)=>!DONE[i]());$("#readyMsg").innerHTML=miss.length?`Go back and finish: <b>${miss.join(", ")}</b>. You can still submit, but your plan will show what is missing.`:`<span class="copied">Everything is complete. Download and send it!</span>`;
   const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
   const rows=filledShop();
   $("#summary").innerHTML=`
@@ -499,6 +519,74 @@ function renderSummary(){
    <h3 style="margin-top:16px">Pitch</h3><div class="pitch" style="font-size:16px">${esc($("#pitchPrev").textContent)}</div>
    <div class="sumgrid" style="margin-top:16px"><div style="min-height:70px"><h3>Teacher approval</h3>Approved: Yes / No &nbsp; Signed: ____________</div><div><h3>Teacher notes</h3></div></div>`;
 }
+
+/* ---------- submission: PDF + email ---------- */
+const TEACHER_EMAIL="hayden.carter740@schools.sa.edu.au", TEACHER_NAME="Mr Carter";
+$("#tEmail").textContent=TEACHER_EMAIL;
+const L1=t=>String(t??"").replace(/[−–—]/g,"-").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,"x").replace(/[^\x00-\xFF]/g,"").trim();
+const pm=v=>(v<0?"-":"")+"$"+Math.abs(v).toFixed(2);
+const fileBase=()=>((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase()||"market-stall");
+function buildPDF(){
+  const {jsPDF}=window.jspdf, d=new jsPDF({unit:"mm",format:"a4"});
+  const W=210,M=16,teal=[1,49,72],coral=[210,76,66];let y=18;
+  const need=h=>{if(y+h>282){d.addPage();y=18}};
+  const head=t=>{need(14);d.setFillColor(238,242,243);d.rect(M,y-5,W-2*M,9,"F");d.setFillColor(...coral);d.rect(M,y-5,1.6,9,"F");d.setFont("helvetica","bold");d.setFontSize(12);d.setTextColor(...teal);d.text(t,M+4,y+1);y+=9};
+  const para=(label,txt)=>{d.setFontSize(10);const lines=d.splitTextToSize(L1(txt)||"(not filled in)",W-2*M-(label?38:0));need(lines.length*5+2);if(label){d.setFont("helvetica","bold");d.setTextColor(80,100,110);d.text(label,M,y)}d.setFont("helvetica","normal");d.setTextColor(20,30,40);d.text(lines,M+(label?38:0),y);y+=lines.length*5+1.5};
+  const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,sc=schoolCost(),y1=S.survey.filter(x=>x===1).length,t1=S.survey.filter(x=>x).length;
+  // title
+  d.setFont("helvetica","bold");d.setFontSize(9);d.setTextColor(...coral);d.text("GLOBAL MARKET CHALLENGE  |  PRODUCT PLAN",M,y);y+=8;
+  d.setFontSize(22);d.setTextColor(...teal);d.text(L1(S.bizName||S.team||"Our team"),M,y);y+=7;
+  d.setFont("helvetica","italic");d.setFontSize(11);d.setTextColor(80,100,110);if(S.slogan){d.text(L1(S.slogan),M,y);y+=6}
+  d.setFont("helvetica","normal");d.setFontSize(10);d.text(`Class: ${L1(S.cls)||"-"}    Submitted: ${new Date().toLocaleDateString("en-AU")}`,M,y);y+=8;
+  const missing=STEPS.slice(0,6).filter((l,i)=>!DONE[i]());
+  if(missing.length){d.setTextColor(...coral);d.setFont("helvetica","bold");d.text("Not yet complete: "+missing.join(", "),M,y);y+=7}
+  head("Team");para("",S.members.filter(m=>m.name.trim()).map(m=>`${m.name} (${m.role})`).join(",  "));
+  head("Product");para("Country",countryName());para("Stall type",(TYPES.find(x=>x[0]===S.type)||[,""])[1]);para("Product",S.product);para("Link to country",S.link);
+  para("Idea checker",`${VIAB.filter(v=>S.viab[v[0]]).length} of ${VIAB.length} ticked`);
+  head("Price and profit");
+  d.autoTable({startY:y,margin:{left:M,right:M},theme:"grid",styles:{fontSize:10,cellPadding:2},headStyles:{fillColor:teal},
+    head:[["Make","Price","Expect to sell","Total cost","Cost to make one","Expected income","Expected "+(pro<0?"loss":"profit")]],
+    body:[[u,pm(p),s,pm(tc),pm(u?tc/u:0),pm(p*s),pm(pro)]]});
+  y=d.lastAutoTable.finalY+5;
+  para("Break even",p&&tc?`Sell ${Math.ceil(tc/p)} to cover costs`:"-");para("Price survey",t1?`${y1} of ${t1} people said yes at ${pm(p)}`:"Not done");
+  head("Stall and marketing");para("Decorations",S.decor);para("Stall checklist",STALL.filter(c=>S.stall[c[0]]).map(c=>c[1]).join("; ")||"(none ticked)");
+  para("Pitch",$("#pitchPrev")?$("#pitchPrev").textContent:"");
+  // shopping list page
+  d.addPage();y=18;
+  d.setFont("helvetica","bold");d.setFontSize(9);d.setTextColor(...coral);d.text("SHOPPING LIST",M,y);y+=8;
+  d.setFontSize(18);d.setTextColor(...teal);d.text(L1(S.bizName||S.team||"Our team")+"  "+L1(S.cls),M,y);y+=6;
+  d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,30,40);d.text("Product: "+L1(S.product),M,y);y+=6;
+  const rows=filledShop(),sec=(title,list,color,showCost)=>{head(title);
+    d.autoTable({startY:y,margin:{left:M,right:M},theme:"grid",styles:{fontSize:10,cellPadding:2},headStyles:{fillColor:color},
+      head:[showCost?["Item","Qty","Cost each","Total"]:["Item","Qty"]],
+      body:list.length?list.map(r=>showCost?[L1(r.item),r.qty,pm(+r.cost||0),pm(lineTotal(r))]:[L1(r.item),r.qty||""]):[[showCost?"Nothing":"Nothing","",...(showCost?["",""]:[])]],
+      columnStyles:{1:{halign:"center",cellWidth:18},2:{halign:"right",cellWidth:28},3:{halign:"right",cellWidth:28}}});
+    y=d.lastAutoTable.finalY+5};
+  sec("School buys (from the $10 budget)",rows.filter(r=>r.who==="School buys"),[47,138,90],true);
+  d.setFont("helvetica","bold");d.setFontSize(11);d.setTextColor(...(sc>BUDGET?coral:teal));d.text(`School total: ${pm(sc)} of $10.00${sc>BUDGET?`  (OVER by ${pm(sc-BUDGET)})`:""}`,M,y);y+=8;
+  sec("Team buys (own money)",rows.filter(r=>r.who==="We'll buy it"),[31,115,156],true);
+  sec("Already have",rows.filter(r=>r.who==="Already have"),[120,130,135],false);
+  const nowho=rows.filter(r=>!r.who);if(nowho.length)sec("Not decided yet",nowho,coral,true);
+  d.setFont("helvetica","bold");d.setFontSize(11);d.setTextColor(...teal);d.text(`Total cost of all items: ${pm(tc)}    Team pays: ${pm(teamCost())}`,M,y);y+=12;
+  need(24);d.setDrawColor(150);d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(20,30,40);
+  d.text("Teacher approval:   Yes  /  No",M,y);d.text("Signed: ______________________",M+80,y);y+=10;d.text("Notes: ___________________________________________________________________",M,y);
+  const n=d.getNumberOfPages();for(let i=1;i<=n;i++){d.setPage(i);d.setFont("helvetica","normal");d.setFontSize(8);d.setTextColor(140);d.text(`${L1(S.bizName||S.team)}  |  page ${i} of ${n}`,W-M,292,{align:"right"})}
+  return d;
+}
+$("#pdfBtn").onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF||!jsPDF_ok()){$("#pdfMsg").innerHTML="The PDF maker didn't load. Use <b>More options → Print instead</b> and choose <b>Save as PDF</b>.";return}
+  try{renderSummary();buildPDF().save(fileBase()+"-plan.pdf");S.downloaded=true;save();$("#pdfMsg").innerHTML=`<span class="copied">Downloaded <b>${esc(fileBase())}-plan.pdf</b>. Now do Part 2.</span>`}
+  catch(e){$("#pdfMsg").innerHTML="Something went wrong making the PDF. Use <b>More options → Print instead</b> and choose <b>Save as PDF</b>."}
+};
+function jsPDF_ok(){try{return typeof new window.jspdf.jsPDF().autoTable==="function"}catch(e){return false}}
+$("#mailBtn").onclick=()=>{
+  const subj=`Market stall plan: ${S.bizName||S.team||"our team"} (${S.cls||"class"})`;
+  let body=`Hi ${TEACHER_NAME},\n\nHere is our market stall plan. Our PDF is attached.\n\nTeam: ${S.members.filter(m=>m.name.trim()).map(m=>m.name).join(", ")}\nProduct: ${S.product} (${countryName()})\nPrice: ${money(+S.price||0)}\n\n`+shopText();
+  if(body.length>1800)body=body.slice(0,1780)+"\n...(see the PDF for the full list)";
+  location.href=`mailto:${TEACHER_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  if(!S.downloaded)$("#pdfMsg").innerHTML='<span style="color:var(--bad);font-weight:700">Don\'t forget to download your PDF and attach it.</span>';
+};
+
 $("#printBtn").onclick=()=>{renderSummary();window.print()};
 $("#copyShop").onclick=async()=>{const t=shopText();try{await navigator.clipboard.writeText(t);$("#copyMsg").textContent="Copied! Paste it into an email or Teams message to your teacher."}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");$("#copyMsg").textContent="Copied!"}catch(_){$("#copyMsg").textContent="Couldn't copy. Print the plan instead."}ta.remove()}};
 $("#saveFile").onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").toLowerCase())+"-plan.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
