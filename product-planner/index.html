@@ -189,7 +189,6 @@ input[type=range]{width:100%;accent-color:var(--coral)}
       <div class="card">
         <label class="field">Our product <span class="hint">What exactly will customers get? Be specific.</span><input type="text" data-f="product" placeholder="e.g. Cups of mango lassi with a paper umbrella"></label>
         <label class="field" style="margin-top:12px">How does it link to our country?<textarea data-f="link" placeholder="e.g. Mango lassi is a popular yoghurt drink in India, especially in summer."></textarea></label>
-        <label class="field" style="margin-top:12px">Who will buy it? <span class="hint">Your target customers, and why they would want it.</span><textarea data-f="customers" placeholder="e.g. Year 7 to 9 students who want a cold drink at lunch. It's sweet and costs less than the canteen."></textarea></label>
       </div>
       <div class="card bl-lime"><h2>Is it a good idea? The idea checker</h2><p class="small muted">Tick each one only if it is true. Talk it through as a team first.</p><div class="checks" id="viab"></div></div>
       <div class="navrow"><button class="btn" data-step="1">← Back</button><button class="btn primary" data-step="3">Next: Shopping list →</button></div>
@@ -381,7 +380,7 @@ const STEPS=["Team","Country","Idea","Shopping","Price","Making","Stall","Our pl
 const DONE=[
  ()=>S.team.trim()&&S.members.filter(m=>m.name.trim()).length>=2,
  ()=>S.country&&(S.country!=="Other"||S.otherCountry.trim()),
- ()=>S.type&&S.product.trim()&&S.link.trim()&&S.customers.trim()&&VIAB.every(v=>S.viab[v[0]]),
+ ()=>S.type&&S.product.trim()&&S.link.trim()&&VIAB.every(v=>S.viab[v[0]]),
  ()=>filledShop().length>=2&&filledShop().every(r=>r.who&&(r.who==="Already have"||(+r.qty>0&&r.cost!==""))),
  ()=>+S.price>0&&+S.units>0&&S.survey.some(x=>x),
  ()=>+S.mins>0&&+S.makers>0&&S.when&&(!isFood()||FOODCHK.every(c=>S.foodChk[c[0]])),
@@ -521,8 +520,7 @@ function renderSummary(){
    <div class="sumgrid" style="margin-top:14px">
     <div><h3>Team</h3>${S.members.filter(m=>m.name.trim()).map(m=>`${esc(m.name)} <span class="muted small">(${esc(m.role)})</span>`).join("<br>")||"<i>not filled in</i>"}</div>
     <div><h3>Country and product</h3><b>${esc(countryName()||"?")}</b> · ${esc((TYPES.find(x=>x[0]===S.type)||[,""])[1])}<br>${esc(S.product||"no product yet")}</div>
-    <div><h3>Link to country</h3>${esc(S.link)||"<i>not filled in</i>"}</div>
-    <div><h3>Customers</h3>${esc(S.customers)||"<i>not filled in</i>"}</div>
+    <div style="grid-column:1/-1"><h3>Link to country</h3>${esc(S.link)||"<i>not filled in</i>"}</div>
    </div>
    <h3 style="margin-top:16px">Shopping list</h3>
    <div class="tablewrap"><table class="shop"><tr><th>Item</th><th>Qty</th><th>Each</th><th>Total</th><th>Who</th></tr>${rows.map(r=>`<tr><td>${esc(r.item)}</td><td>${esc(r.qty)}</td><td>${r.who==="Already have"?"–":money(+r.cost||0)}</td><td>${money(lineTotal(r))}</td><td>${esc(r.who)}</td></tr>`).join("")||`<tr><td colspan="5"><i>empty</i></td></tr>`}<tr><td colspan="3" style="text-align:right"><b>Total cost</b></td><td><b>${money(tc)}</b></td><td class="small">Teacher buying: ${money(teacherCost())}${+S.cap?`<br>Limit: ${money(+S.cap)}`:""}</td></tr></table></div>
