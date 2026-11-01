@@ -38,7 +38,7 @@ button{cursor:pointer}
 .brand{font-family:var(--f-display);font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px}
 .dots{display:inline-flex;gap:3px}.dots i{width:9px;height:9px;border-radius:50%;display:block}
 .teamtag{margin-left:auto;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
-.steps{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.steps{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .steps button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 4px;font-size:13px;display:grid;gap:2px;justify-items:center;text-align:center;line-height:1.15}
 .steps button b{font-family:var(--f-mono);font-size:12px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ink) 8%,var(--surface))}
 .steps button.done b{background:var(--good);color:#fff}
@@ -139,7 +139,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
 .copied{color:var(--good);font-weight:700;font-size:14px}
 @media (max-width:860px){.steps{grid-template-columns:repeat(4,1fr)}.roles,.countries{grid-template-columns:repeat(3,1fr)}.starters,.types,.grid3{grid-template-columns:1fr}.grid2,.sumgrid{grid-template-columns:1fr}.money,.ready{grid-template-columns:1fr 1fr}.mem{grid-template-columns:1fr 1fr}.mem .x{justify-self:start}}
 @media (max-width:520px){.roles,.countries{grid-template-columns:1fr 1fr}.survey{grid-template-columns:repeat(5,1fr)}.mem{grid-template-columns:1fr}}
-@media print{.bar,.steps,.navrow,.noprint{display:none!important}body{background:#fff;color:#000;font-size:13px}.page{display:none!important}#p-7{display:block!important}.card{border-color:#999;break-inside:avoid}}
+@media print{.bar,.steps,.navrow,.noprint{display:none!important}body{background:#fff;color:#000;font-size:13px}.page{display:none!important}#p-6{display:block!important}.card{border-color:#999;break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -153,7 +153,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 0 TEAM -->
   <section class="page" id="p-0">
     <div class="stack">
-      <header><div class="eyebrow">Global Market Challenge · Step 1 of 8</div><h1>Your team</h1><p>Plan your market stall product from idea to shopping list. Work through the steps as a team on <b>one device</b>. Everything saves on this computer as you go.</p></header>
+      <header><div class="eyebrow">Global Market Challenge · Step 1 of 7</div><h1>Your team</h1><p>Plan your market stall product from idea to shopping list. Work through the steps as a team on <b>one device</b>. Everything saves on this computer as you go.</p></header>
       <div class="card">
         <label class="field">Team name <span class="hint">You can change this later when you pick your business name.</span><input type="text" data-f="team" placeholder="e.g. The Dumpling Crew"></label>
         <label class="field" style="margin-top:12px">Class<input type="text" data-f="cls" placeholder="e.g. 9B" style="max-width:200px"></label>
@@ -171,7 +171,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 1 COUNTRY -->
   <section class="page" id="p-1" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 2 of 8</div><h1>Choose your Asian country</h1><p>Your stall celebrates one Asian country. Tap a country to see idea starters. You will pick your actual product on the next step.</p></header>
+      <header><div class="eyebrow">Step 2 of 7</div><h1>Choose your Asian country</h1><p>Your stall celebrates one Asian country. Tap a country to see idea starters. You will pick your actual product on the next step.</p></header>
       <div class="card"><div class="countries" id="countries"></div>
         <div id="otherWrap" hidden style="margin-top:12px"><label class="field">Which country?<input type="text" data-f="otherCountry" placeholder="Any Asian country"></label></div>
       </div>
@@ -183,7 +183,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 2 IDEA -->
   <section class="page" id="p-2" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 3 of 8</div><h1>Your product idea</h1><p>What will your stall sell or run? Choose the type, then pick an idea starter or write your own.</p></header>
+      <header><div class="eyebrow">Step 3 of 7</div><h1>Your product idea</h1><p>What will your stall sell or run? Choose the type, then pick an idea starter or write your own.</p></header>
       <div class="card"><h2>What type of stall?</h2><div class="types" id="types"></div></div>
       <div class="card" id="ideaPick"></div>
       <div class="card">
@@ -198,7 +198,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 3 SHOPPING -->
   <section class="page" id="p-3" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 4 of 8 · Finance leads, everyone checks</div><h1>Shopping list</h1><p>List everything you need to make and sell your product. Look up prices on a supermarket or shop website and estimate the cost of each item. The totals add up for you.</p></header>
+      <header><div class="eyebrow">Step 4 of 7 · Finance leads, everyone checks</div><h1>Shopping list</h1><p>List everything you need to make and sell your product. Look up prices on a supermarket or shop website and estimate the cost of each item. The totals add up for you.</p></header>
       <div class="card" id="suggestCard" hidden><div class="row" style="justify-content:space-between"><span id="suggestTxt"></span><button class="btn sm" id="suggestBtn">Add suggested items</button></div></div>
       <div class="card">
         <div class="tablewrap"><table class="shop" id="shop"></table></div>
@@ -218,7 +218,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 4 PRICE -->
   <section class="page" id="p-4" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 5 of 8</div><h1>Price and profit</h1><p>Move the sliders to test different prices. Your aim: a price that customers will pay AND that makes a profit.</p></header>
+      <header><div class="eyebrow">Step 5 of 7</div><h1>Price and profit</h1><p>Move the sliders to test different prices. Your aim: a price that customers will pay AND that makes a profit.</p></header>
       <div class="grid2">
         <div class="card"><div class="sliders">
           <div class="sl"><div class="top"><span>How many will we make?</span><input type="number" min="1" data-n="units"></div><input type="range" min="1" max="150" data-r="units"></div>
@@ -246,33 +246,14 @@ input[type=range]{width:100%;accent-color:var(--coral)}
         <h3>Pricing tips</h3>
         <ul style="margin:0;padding-left:1.2em"><li>Round prices like $1, $2 or $3 are quicker to serve and need less change.</li><li>Your price must be more than the cost to make one, or you lose money on every sale.</li><li>Be realistic: most students have only a few dollars at lunch.</li><li>A deal can sell more: "$2 each or 3 for $5".</li></ul>
       </div>
-      <div class="navrow"><button class="btn" data-step="3">← Back</button><button class="btn primary" data-step="5">Next: Making plan →</button></div>
+      <div class="navrow"><button class="btn" data-step="3">← Back</button><button class="btn primary" data-step="5">Next: Stall and marketing →</button></div>
     </div>
   </section>
 
-  <!-- 5 MAKING -->
+  <!-- 5 STALL -->
   <section class="page" id="p-5" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 6 of 8 · Production leads</div><h1>Making plan</h1><p>Can you actually make enough in time? Time how long it takes to make one, then work out how many lessons you need.</p></header>
-      <div class="grid2">
-        <div class="card">
-          <label class="field">Minutes to make one <span class="hint">Make a test one and time it. For food, how long to prepare and serve one.</span><input type="number" min="0" step="0.5" data-f="mins"></label>
-          <label class="field" style="margin-top:12px">How many people making at once?<input type="number" min="1" data-f="makers"></label>
-          <label class="field" style="margin-top:12px">Minutes of making time in one lesson<input type="number" min="1" data-f="lessonMins"></label>
-          <label class="field" style="margin-top:12px">Will you make it before market day, or on the day?<select class="full" data-f="when"><option value="">choose…</option><option>Before market day</option><option>On market day</option><option>Some before, some on the day</option></select></label>
-        </div>
-        <div class="card"><div class="money" style="grid-template-columns:1fr 1fr"><div class="readout" id="tTotal">0 min<small>total making time</small></div><div class="readout" id="tLessons">0<small>lessons needed</small></div></div><div class="alerts" id="timeAlerts" style="margin-top:10px"></div></div>
-      </div>
-      <div class="card"><h2>Who does what before market day?</h2><div id="jobs" style="display:grid;gap:10px"></div></div>
-      <div class="card bl-coral" id="foodSafe" hidden><h2>Food safety plan</h2><div class="checks" id="foodChecks"></div><label class="field" style="margin-top:10px">Ingredients and allergens in our food <span class="hint">You will show this on your stall.</span><textarea data-f="allergens" placeholder="e.g. Contains milk (yoghurt). No nuts. No gluten."></textarea></label></div>
-      <div class="navrow"><button class="btn" data-step="4">← Back</button><button class="btn primary" data-step="6">Next: Stall and marketing →</button></div>
-    </div>
-  </section>
-
-  <!-- 6 STALL -->
-  <section class="page" id="p-6" hidden>
-    <div class="stack">
-      <header><div class="eyebrow">Step 7 of 8 · Marketing leads</div><h1>Stall and marketing</h1><p>Give your business a name, plan what your stall will look like and write a pitch to pull customers in.</p></header>
+      <header><div class="eyebrow">Step 6 of 7 · Marketing leads</div><h1>Stall and marketing</h1><p>Give your business a name, plan what your stall will look like and write a pitch to pull customers in.</p></header>
       <div class="grid2">
         <div class="card">
           <label class="field">Business name<input type="text" data-f="bizName" placeholder="e.g. Lassi Land"></label>
@@ -290,14 +271,14 @@ input[type=range]{width:100%;accent-color:var(--coral)}
         <label class="field" style="margin-top:10px">Call to action<input type="text" data-f="cta" placeholder="e.g. Grab one before they run out!"></label>
         <div class="pitch" id="pitchPrev" style="margin-top:14px"></div>
       </div>
-      <div class="navrow"><button class="btn" data-step="5">← Back</button><button class="btn primary" data-step="7">Next: Our plan →</button></div>
+      <div class="navrow"><button class="btn" data-step="4">← Back</button><button class="btn primary" data-step="6">Next: Our plan →</button></div>
     </div>
   </section>
 
-  <!-- 7 SUMMARY -->
-  <section class="page" id="p-7" hidden>
+  <!-- 6 SUMMARY -->
+  <section class="page" id="p-6" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 8 of 8</div><h1>Our plan</h1><p>Check everything is complete, then print it or save it as a PDF for your teacher. Copy your shopping list so your teacher knows what to buy.</p></header>
+      <header><div class="eyebrow">Step 7 of 7</div><h1>Our plan</h1><p>Check everything is complete, then print it or save it as a PDF for your teacher. Copy your shopping list so your teacher knows what to buy.</p></header>
       <div class="card noprint"><h2>Ready for approval?</h2><div class="ready" id="ready"></div></div>
       <div class="card noprint row">
         <button class="btn primary" id="printBtn">Print or save as PDF</button>
@@ -308,7 +289,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
       </div>
       <div class="card" id="summary"></div>
       <div class="card noprint small muted">Working on a different computer next lesson? Use <b>Save plan to a file</b>, put it in your school drive or email it to yourself, then use <b>Open a saved plan</b> on the new computer. <button class="btn sm" id="resetBtn" style="margin-left:6px">Start a new plan</button></div>
-      <div class="navrow"><button class="btn" data-step="6">← Back</button><span></span></div>
+      <div class="navrow"><button class="btn" data-step="5">← Back</button><span></span></div>
     </div>
   </section>
 </div>
@@ -381,18 +362,17 @@ const isFood=()=>S.type==="food";
 const filledShop=()=>S.shop.filter(r=>r.item.trim());
 
 /* ---------- steps nav ---------- */
-const STEPS=["Team","Country","Idea","Shopping","Price","Making","Stall","Our plan"];
+const STEPS=["Team","Country","Idea","Shopping","Price","Stall","Our plan"];
 const DONE=[
  ()=>S.team.trim()&&S.members.filter(m=>m.name.trim()).length>=2,
  ()=>S.country&&(S.country!=="Other"||S.otherCountry.trim()),
  ()=>S.type&&S.product.trim()&&S.link.trim()&&VIAB.every(v=>S.viab[v[0]]),
  ()=>filledShop().length>=2&&schoolCost()<=BUDGET&&filledShop().every(r=>r.who&&(r.who==="Already have"||(+r.qty>0&&r.cost!==""))),
  ()=>+S.price>0&&+S.units>0&&S.survey.some(x=>x),
- ()=>+S.mins>0&&+S.makers>0&&S.when&&(!isFood()||FOODCHK.every(c=>S.foodChk[c[0]])),
  ()=>S.bizName.trim()&&S.slogan.trim()&&S.hook.trim()&&STALL.filter(c=>S.stall[c[0]]).length>=5,
  ()=>false];
 function renderSteps(){const nav=$("#steps");if(!nav.children.length)nav.innerHTML=STEPS.map((l,i)=>`<button data-step="${i}"><b></b>${l}</button>`).join("");
-  [...nav.children].forEach((b,i)=>{const d=i<7&&DONE[i]();b.classList.toggle("done",!!d);b.setAttribute("aria-current",S.step===i);b.firstChild.textContent=d?"✓":i+1})}
+  [...nav.children].forEach((b,i)=>{const d=i<6&&DONE[i]();b.classList.toggle("done",!!d);b.setAttribute("aria-current",S.step===i);b.firstChild.textContent=d?"✓":i+1})}
 function renderTag(){$("#teamTag").textContent=[S.bizName||S.team,S.cls].filter(Boolean).join(" · ")}
 function go(i){S.step=i;save();document.querySelectorAll(".page").forEach(p=>p.hidden=p.id!=="p-"+i);RENDER[i]&&RENDER[i]();window.scrollTo({top:0,behavior:"smooth"})}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)go(+b.dataset.step)});
@@ -489,25 +469,6 @@ function renderSurvey(){$("#survey").innerHTML=S.survey.map((v,i)=>`<button data
   $("#svRes").textContent=t?`${y} of ${t} said yes (${Math.round(y/t*100)}%). `+(t<10?"Keep asking.":y>=7?"Great: your price looks right.":y>=4?"Mixed: think about a slightly lower price or a deal.":"Most said no: your price may be too high, or the product needs work."):""}
 $("#survey").addEventListener("click",e=>{const i=e.target.closest("[data-sv]");if(!i)return;const k=+i.dataset.sv;S.survey[k]=(S.survey[k]+1)%3;save();renderSurvey()});
 
-/* ---------- 5 making ---------- */
-function timeCalc(){
-  const m=+S.mins||0,mk=+S.makers||0,lm=+S.lessonMins||0,u=+S.units||0,tot=m*u,les=mk&&lm?tot/(mk*lm):0;
-  $("#tTotal").innerHTML=`${Math.round(tot)} min<small>total making time (${u} × ${m} min)</small>`;
-  $("#tLessons").innerHTML=`${les?Math.ceil(les*10)/10:0}<small>lessons needed</small>`;
-  const a=[];if(les>3)a.push(`<div class="alert bad">That's a lot of lessons. Make fewer, find a faster way, or get more people making.</div>`);
-  else if(les>0)a.push(`<div class="alert good">Looks doable. Plan which lessons you will use.</div>`);
-  if(S.when==="On market day"&&m>2)a.push(`<div class="alert warn">At ${m} minutes each, a queue will build fast. Prepare some before the stall opens.</div>`);
-  $("#timeAlerts").innerHTML=a.join("");
-}
-LIVE.mins=LIVE.makers=LIVE.lessonMins=LIVE.when=timeCalc;
-function renderJobs(){const ms=S.members.filter(m=>m.name.trim());
-  $("#jobs").innerHTML=ms.length?ms.map(m=>`<label class="field">${esc(m.name)} <span class="hint">${esc(m.role)}</span><input type="text" data-j="${esc(m.name)}" value="${esc(S.jobs[m.name]||"")}" placeholder="e.g. Buy cups and straws, make the price sign"></label>`).join(""):`<p class="muted">Add your team members on Step 1 first.</p>`;
-  $("#foodSafe").hidden=!isFood();
-  $("#foodChecks").innerHTML=FOODCHK.map(c=>`<label class="check ${S.foodChk[c[0]]?"on":""}"><input type="checkbox" data-fc="${c[0]}"${S.foodChk[c[0]]?" checked":""}><span>${c[1]}</span></label>`).join("");
-  timeCalc()}
-$("#jobs").addEventListener("input",e=>{const n=e.target.dataset.j;if(n!=null){S.jobs[n]=e.target.value;save()}});
-$("#foodChecks").addEventListener("change",e=>{const k=e.target.dataset.fc;if(!k)return;S.foodChk[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
-
 /* ---------- 6 stall ---------- */
 function renderSign(){$("#signPrev").innerHTML=`<div class="small muted">${esc(countryName()||"Our country")} ${S.country&&COUNTRIES[S.country]?COUNTRIES[S.country].f:""}</div><div class="nm">${esc(S.bizName||"Business name")}</div><div><i>${esc(S.slogan||"Your slogan here")}</i></div><div style="margin-top:6px">${esc(S.product||"Your product")}</div><div class="pr">${money(+S.price||0)}</div>`}
 function renderPitch(){$("#pitchPrev").textContent=`${S.hook||"[Grab attention]"} Come to ${S.bizName||"[business name]"}! We've got ${S.product?S.product.charAt(0).toLowerCase()+S.product.slice(1):"[product]"} from ${countryName()||"[country]"}, just ${money(+S.price||0)}. ${S.special||"[What makes it special]"}. ${S.cta||"[Call to action]"}`}
@@ -518,7 +479,7 @@ $("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!
 /* ---------- 7 summary ---------- */
 function shopText(){const rows=filledShop(),sc=schoolCost();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nSCHOOL TO BUY ($10 budget):\n${rows.filter(r=>r.who==="School buys").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nSchool total: ${money(sc)}${sc>BUDGET?` (OVER the $10 budget by ${money(sc-BUDGET)})`:""}\n\nTEAM BUYING:\n${rows.filter(r=>r.who==="We'll buy it").map(r=>`- ${r.qty} x ${r.item} (about ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nTeam total: ${money(teamCost())}\n\nTotal cost of all items: ${money(totalCost())}`}
 function renderSummary(){
-  $("#ready").innerHTML=STEPS.slice(0,7).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
+  $("#ready").innerHTML=STEPS.slice(0,6).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
   const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
   const rows=filledShop();
   $("#summary").innerHTML=`
@@ -533,9 +494,6 @@ function renderSummary(){
    <div class="sumgrid" style="margin-top:14px">
     <div><h3>Money</h3>Make <b>${u}</b> · Price <b>${money(p)}</b> · Expect to sell <b>${s}</b><br>Cost to make one: ${money(u?tc/u:0)}<br>Expected income: ${money(p*s)}<br><b>Expected ${pro<0?"loss":"profit"}: ${money(pro)}</b>${p&&tc?`<br>Break even at ${Math.ceil(tc/p)} sales`:""}</div>
     <div><h3>Price survey</h3>${t?`${y} of ${t} people said yes at ${money(p)}`:"<i>not done</i>"}</div>
-    <div><h3>Making plan</h3>${S.mins?`${S.mins} min each · ${S.makers||"?"} making · ${Math.round((+S.mins||0)*u)} min total`:"<i>not filled in</i>"}<br>${esc(S.when)}</div>
-    <div><h3>Jobs</h3>${Object.entries(S.jobs).filter(([n,j])=>j.trim()&&S.members.some(m=>m.name===n)).map(([n,j])=>`<b>${esc(n)}:</b> ${esc(j)}`).join("<br>")||"<i>not filled in</i>"}</div>
-    ${isFood()?`<div><h3>Food safety</h3>${FOODCHK.filter(c=>S.foodChk[c[0]]).length} of ${FOODCHK.length} checks done<br>Allergens: ${esc(S.allergens)||"<i>not listed</i>"}</div>`:""}
     <div><h3>Stall</h3>${esc(S.decor)||"<i>no decorations planned</i>"}<br><span class="small muted">${STALL.filter(c=>S.stall[c[0]]).length} of ${STALL.length} stall items planned</span></div>
    </div>
    <h3 style="margin-top:16px">Pitch</h3><div class="pitch" style="font-size:16px">${esc($("#pitchPrev").textContent)}</div>
@@ -544,11 +502,11 @@ function renderSummary(){
 $("#printBtn").onclick=()=>{renderSummary();window.print()};
 $("#copyShop").onclick=async()=>{const t=shopText();try{await navigator.clipboard.writeText(t);$("#copyMsg").textContent="Copied! Paste it into an email or Teams message to your teacher."}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");$("#copyMsg").textContent="Copied!"}catch(_){$("#copyMsg").textContent="Couldn't copy. Print the plan instead."}ta.remove()}};
 $("#saveFile").onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").toLowerCase())+"-plan.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
-$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.step=7;save();bindFields();renderMembers();go(7);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
+$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.step=6;save();bindFields();renderMembers();go(6);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
 $("#resetBtn").onclick=()=>{if(confirm("Clear this plan and start again? Save it to a file first if you want to keep it.")){S=blank();save();bindFields();renderMembers();go(0)}};
 
-const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderJobs,6:renderStall,7:renderSummary};
-bindFields();renderMembers();go(S.step||0);
+const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderStall,6:renderSummary};
+if(S.step>6)S.step=6;bindFields();renderMembers();go(S.step||0);
 </script>
 </body>
 </html>
