@@ -129,6 +129,16 @@ input[type=range]{width:100%;accent-color:var(--coral)}
 .sign .nm{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.05}
 .sign .pr{font-family:var(--f-mono);font-weight:700;font-size:30px;color:var(--coral)}
 .page[hidden]{display:none}
+.savebar{position:static;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:color-mix(in srgb,var(--lime) 30%,var(--surface));border:2px solid var(--lime);border-radius:14px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.savebar .state{font-size:14px;color:var(--muted)}
+.savebar .state.warn{color:var(--bad);font-weight:700}
+.savebar .state.ok{color:var(--good);font-weight:700}
+.linkbtn{border:0;background:none;padding:4px 6px;font-size:14px;text-decoration:underline;color:var(--ink)}
+.howto{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.howto>div{border:1px solid var(--line);border-radius:12px;padding:12px}
+.howto b.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--f-mono);margin-right:6px}
+@media (max-width:860px){.howto{grid-template-columns:1fr}}
+@media (min-width:861px){.savebar{position:sticky;top:8px;z-index:5}}
 .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .sumgrid>div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .sumgrid h3{font-size:13px;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
@@ -149,10 +159,28 @@ input[type=range]{width:100%;accent-color:var(--coral)}
     <span class="teamtag" id="teamTag"></span>
   </div>
   <nav class="steps" id="steps" aria-label="Steps"></nav>
+  <div class="savebar noprint" id="savebar">
+    <div><b>💾 Using another computer later?</b> <span class="state" id="saveState"></span></div>
+    <div class="row">
+      <button class="btn primary" id="saveFile">💾 Save my work</button>
+      <label class="btn" style="display:inline-block;background:var(--surface)">📂 Open saved work<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
+      <button class="linkbtn" id="howBtn" aria-expanded="false">How does saving work?</button>
+    </div>
+  </div>
+  <div class="card noprint" id="howCard" hidden>
+    <h2>How to save your work and keep going on another computer</h2>
+    <div class="howto">
+      <div><b class="n">1</b><b>Save it</b><p class="small" style="margin-top:6px">Click <b>💾 Save my work</b>. A file ending in <b>-saved-work.json</b> goes into your <b>Downloads</b> folder.</p></div>
+      <div><b class="n">2</b><b>Keep it somewhere safe</b><p class="small" style="margin-top:6px">Move the file to your <b>OneDrive or Google Drive</b>, or email it to yourself. Every team member can have a copy.</p></div>
+      <div><b class="n">3</b><b>Open it anywhere</b><p class="small" style="margin-top:6px">On any computer, open this website, click <b>📂 Open saved work</b> and choose your file. Everything comes back.</p></div>
+    </div>
+    <p class="small muted" style="margin-top:10px">On the same computer, your work also saves by itself as you type. Save a file at the end of every lesson anyway, in case the computer is cleared. <button class="linkbtn" id="resetBtn">Start a brand new plan</button></p>
+  </div>
 
   <!-- 0 TEAM -->
   <section class="page" id="p-0">
     <div class="stack">
+      <div class="card bl-lime noprint row" style="justify-content:space-between"><span><b>Already started on another computer?</b> Open your saved work file to carry on.</span><button class="btn" id="openFromStart">📂 Open saved work</button></div>
       <header><div class="eyebrow">Global Market Challenge · Step 1 of 7</div><h1>Your team</h1><p>Plan your market stall product from idea to shopping list. Work through the steps as a team on <b>one device</b>. Everything saves on this computer as you go.</p></header>
       <div class="card">
         <label class="field">Team name <span class="hint">You can change this later when you pick your business name.</span><input type="text" data-f="team" placeholder="e.g. The Dumpling Crew"></label>
@@ -278,34 +306,16 @@ input[type=range]{width:100%;accent-color:var(--coral)}
   <!-- 6 SUMMARY -->
   <section class="page" id="p-6" hidden>
     <div class="stack">
-      <header><div class="eyebrow">Step 7 of 7</div><h1>Submit your plan</h1><p>This is your final page. Check everything is complete, download your plan, then email it to Mr Carter. Your shopping list is on the plan, so we know what to buy.</p></header>
+      <header><div class="eyebrow">Step 7 of 7</div><h1>Submit your plan</h1><p>This is your final page. Check everything is complete, then download your plan. Your shopping list is included in it.</p></header>
       <div class="card noprint"><h2>Ready to submit?</h2><div class="ready" id="ready"></div><p class="small muted" id="readyMsg" style="margin-top:10px"></p></div>
-      <div class="grid2 noprint">
-        <div class="card bl-coral">
-          <div class="eyebrow" style="color:var(--coral)">Part 1</div><h2>Download your plan</h2>
-          <p class="small">This saves a PDF of your whole plan, with your shopping list on the last page.</p>
-          <button class="btn primary" id="pdfBtn">⬇ Download our plan (PDF)</button>
-          <p class="small muted" id="pdfMsg" style="margin-top:8px"></p>
-        </div>
-        <div class="card bl-green">
-          <div class="eyebrow" style="color:var(--green)">Part 2</div><h2>Email it to Mr Carter</h2>
-          <p class="small">This opens an email with your shopping list already in it. <b>Attach the PDF you just downloaded</b> (it's in your Downloads folder), then press send.</p>
-          <button class="btn primary" id="mailBtn">✉ Email Mr Carter</button>
-          <p class="small muted" style="margin-top:8px">Email doesn't open? Send your PDF to <b id="tEmail"></b> another way, such as through your school email website.</p>
-        </div>
+      <div class="card bl-coral noprint">
+        <h2>Download your plan</h2>
+        <p>This makes a PDF of your whole plan, including your shopping list. Hand it in to your teacher.</p>
+        <div class="row"><button class="btn primary" id="pdfBtn">⬇ Download our plan (PDF)</button><button class="linkbtn" id="printBtn">Print instead</button></div>
+        <p class="small muted" id="pdfMsg" style="margin-top:8px"></p>
       </div>
-      <details class="card noprint small"><summary style="cursor:pointer;font-weight:700">More options</summary>
-        <div class="row" style="margin-top:10px">
-          <button class="btn sm" id="printBtn">Print instead</button>
-          <button class="btn sm" id="copyShop">Copy shopping list</button>
-          <button class="btn sm" id="saveFile">Save plan to keep working on another computer</button>
-          <label class="btn sm" style="display:inline-block">Open a saved plan<input type="file" id="loadFile" accept=".json,application/json" hidden></label>
-          <span class="copied" id="copyMsg"></span>
-        </div>
-      </details>
       <h2 class="noprint" style="font-family:var(--f-display);margin:6px 0 -4px">Preview</h2>
       <div class="card" id="summary"></div>
-      <div class="card noprint small muted">Working on a different computer next lesson? Open <b>More options</b>, use <b>Save plan to keep working on another computer</b>, put the file in your school drive, then use <b>Open a saved plan</b> on the new computer. <button class="btn sm" id="resetBtn" style="margin-left:6px">Start a new plan</button></div>
       <div class="navrow"><button class="btn" data-step="5">← Back</button><span></span></div>
     </div>
   </section>
@@ -369,7 +379,7 @@ const blank=()=>({step:0,team:"",cls:"",members:[{name:"",role:"Team leader"},{n
 let S=blank();
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw))}catch(e){}
 function migrate(){S.shop.forEach(r=>{if(r.who==="Teacher to buy")r.who="School buys";if(r.who==="We'll bring it")r.who="We'll buy it"})}migrate();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}renderSteps();renderTag()}
+function save(nav){if(!nav)S.dirty=true;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}renderSteps();renderTag();saveState()}
 
 /* ---------- derived ---------- */
 const lineTotal=r=>r.who==="Already have"?0:(+r.qty||0)*(+r.cost||0);
@@ -393,7 +403,7 @@ const DONE=[
 function renderSteps(){const nav=$("#steps");if(!nav.children.length)nav.innerHTML=STEPS.map((l,i)=>`<button data-step="${i}"><b></b>${l}</button>`).join("");
   [...nav.children].forEach((b,i)=>{const d=i<6&&DONE[i]();b.classList.toggle("done",!!d);b.setAttribute("aria-current",S.step===i);b.firstChild.textContent=d?"✓":i+1})}
 function renderTag(){$("#teamTag").textContent=[S.bizName||S.team,S.cls].filter(Boolean).join(" · ")}
-function go(i){S.step=i;save();document.querySelectorAll(".page").forEach(p=>p.hidden=p.id!=="p-"+i);RENDER[i]&&RENDER[i]();window.scrollTo({top:0,behavior:"smooth"})}
+function go(i){S.step=i;save(true);document.querySelectorAll(".page").forEach(p=>p.hidden=p.id!=="p-"+i);RENDER[i]&&RENDER[i]();window.scrollTo({top:0,behavior:"smooth"})}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)go(+b.dataset.step)});
 
 /* generic text fields */
@@ -496,8 +506,7 @@ function renderStall(){$("#stallChecks").innerHTML=STALL.map(c=>`<label class="c
 $("#stallChecks").addEventListener("change",e=>{const k=e.target.dataset.st;if(!k)return;S.stall[k]=e.target.checked;e.target.closest(".check").classList.toggle("on",e.target.checked);save()});
 
 /* ---------- 7 summary ---------- */
-function shopText(){const rows=filledShop(),sc=schoolCost();return `SHOPPING LIST: ${S.bizName||S.team||"Team"} (${S.cls||"class"})\nProduct: ${S.product}\n\nSCHOOL TO BUY ($10 budget):\n${rows.filter(r=>r.who==="School buys").map(r=>`- ${r.qty} x ${r.item} (about ${money(+r.cost||0)} each = ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nSchool total: ${money(sc)}${sc>BUDGET?` (OVER the $10 budget by ${money(sc-BUDGET)})`:""}\n\nTEAM BUYING:\n${rows.filter(r=>r.who==="We'll buy it").map(r=>`- ${r.qty} x ${r.item} (about ${money(lineTotal(r))})`).join("\n")||"- nothing"}\nTeam total: ${money(teamCost())}\n\nTotal cost of all items: ${money(totalCost())}`}
-function renderSummary(){
+function renderSummary(){renderPitch();
   $("#ready").innerHTML=STEPS.slice(0,6).map((l,i)=>`<div class="${DONE[i]()?"ok":"no"}">${DONE[i]()?"✓":"✗"} ${l}</div>`).join("");
   const miss=STEPS.slice(0,6).filter((l,i)=>!DONE[i]());$("#readyMsg").innerHTML=miss.length?`Go back and finish: <b>${miss.join(", ")}</b>. You can still submit, but your plan will show what is missing.`:`<span class="copied">Everything is complete. Download and send it!</span>`;
   const tc=totalCost(),u=+S.units||0,p=+S.price||0,s=+S.sales||0,pro=p*s-tc,y=S.survey.filter(x=>x===1).length,t=S.survey.filter(x=>x).length;
@@ -521,8 +530,6 @@ function renderSummary(){
 }
 
 /* ---------- submission: PDF + email ---------- */
-const TEACHER_EMAIL="hayden.carter740@schools.sa.edu.au", TEACHER_NAME="Mr Carter";
-$("#tEmail").textContent=TEACHER_EMAIL;
 const L1=t=>String(t??"").replace(/[−–—]/g,"-").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,"x").replace(/[^\x00-\xFF]/g,"").trim();
 const pm=v=>(v<0?"-":"")+"$"+Math.abs(v).toFixed(2);
 const fileBase=()=>((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase()||"market-stall");
@@ -574,23 +581,25 @@ function buildPDF(){
   return d;
 }
 $("#pdfBtn").onclick=()=>{
-  if(!window.jspdf||!window.jspdf.jsPDF||!jsPDF_ok()){$("#pdfMsg").innerHTML="The PDF maker didn't load. Use <b>More options → Print instead</b> and choose <b>Save as PDF</b>.";return}
-  try{renderSummary();buildPDF().save(fileBase()+"-plan.pdf");S.downloaded=true;save();$("#pdfMsg").innerHTML=`<span class="copied">Downloaded <b>${esc(fileBase())}-plan.pdf</b>. Now do Part 2.</span>`}
-  catch(e){$("#pdfMsg").innerHTML="Something went wrong making the PDF. Use <b>More options → Print instead</b> and choose <b>Save as PDF</b>."}
+  if(!window.jspdf||!window.jspdf.jsPDF||!jsPDF_ok()){$("#pdfMsg").innerHTML="The PDF maker didn't load. Use <b>Print instead</b> and choose <b>Save as PDF</b>.";return}
+  try{renderSummary();buildPDF().save(fileBase()+"-plan.pdf");$("#pdfMsg").innerHTML=`<span class="copied">Downloaded <b>${esc(fileBase())}-plan.pdf</b> to your Downloads folder. Hand it in to your teacher.</span>`}
+  catch(e){$("#pdfMsg").innerHTML="Something went wrong making the PDF. Use <b>Print instead</b> and choose <b>Save as PDF</b>."}
 };
 function jsPDF_ok(){try{return typeof new window.jspdf.jsPDF().autoTable==="function"}catch(e){return false}}
-$("#mailBtn").onclick=()=>{
-  const subj=`Market stall plan: ${S.bizName||S.team||"our team"} (${S.cls||"class"})`;
-  let body=`Hi ${TEACHER_NAME},\n\nHere is our market stall plan. Our PDF is attached.\n\nTeam: ${S.members.filter(m=>m.name.trim()).map(m=>m.name).join(", ")}\nProduct: ${S.product} (${countryName()})\nPrice: ${money(+S.price||0)}\n\n`+shopText();
-  if(body.length>1800)body=body.slice(0,1780)+"\n...(see the PDF for the full list)";
-  location.href=`mailto:${TEACHER_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-  if(!S.downloaded)$("#pdfMsg").innerHTML='<span style="color:var(--bad);font-weight:700">Don\'t forget to download your PDF and attach it.</span>';
-};
+
 
 $("#printBtn").onclick=()=>{renderSummary();window.print()};
-$("#copyShop").onclick=async()=>{const t=shopText();try{await navigator.clipboard.writeText(t);$("#copyMsg").textContent="Copied! Paste it into an email or Teams message to your teacher."}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");$("#copyMsg").textContent="Copied!"}catch(_){$("#copyMsg").textContent="Couldn't copy. Print the plan instead."}ta.remove()}};
-$("#saveFile").onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=((S.bizName||S.team||"market-stall").replace(/[^\w]+/g,"-").toLowerCase())+"-plan.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
-$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.step=6;save();bindFields();renderMembers();go(6);$("#copyMsg").textContent="Plan opened."}catch(_){$("#copyMsg").textContent="That file isn't a saved plan."}};r.readAsText(f);e.target.value=""};
+function saveState(){const el=$("#saveState");if(!el)return;
+  if(!S.savedAt){el.className="state";el.textContent="Not saved to a file yet."}
+  else if(S.dirty){el.className="state warn";el.textContent="You have changes since your last save. Save again before you leave!"}
+  else{el.className="state ok";el.textContent="✓ Saved to a file at "+new Date(S.savedAt).toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"})+"."}}
+function flash(msg,cls){const el=$("#saveState");el.className="state "+(cls||"ok");el.textContent=msg}
+$("#saveFile").onclick=()=>{S.savedAt=Date.now();S.dirty=false;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fileBase()+"-saved-work.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+  flash(`✓ Saved "${fileBase()}-saved-work.json" to your Downloads folder. Move it to your OneDrive, Google Drive or email.`)};
+$("#loadFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(typeof d!=="object"||!d||!d.shop)throw 0;S=Object.assign(blank(),d);migrate();S.dirty=false;if(S.step>6)S.step=6;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}bindFields();renderMembers();renderSteps();renderTag();go(S.step||0);flash(`✓ Opened your saved work: ${S.bizName||S.team||"your plan"}.`)}catch(_){flash("That file isn't a saved work file. Choose the file ending in -saved-work.json.","warn")}};r.readAsText(f);e.target.value=""};
+$("#openFromStart").onclick=()=>$("#loadFile").click();
+$("#howBtn").onclick=()=>{const c=$("#howCard"),open=c.hidden;c.hidden=!open;$("#howBtn").setAttribute("aria-expanded",open)};
 $("#resetBtn").onclick=()=>{if(confirm("Clear this plan and start again? Save it to a file first if you want to keep it.")){S=blank();save();bindFields();renderMembers();go(0)}};
 
 const RENDER={0:renderMembers,1:renderCountries,2:renderIdea,3:renderShop,4:()=>{syncPrice();renderSurvey()},5:renderStall,6:renderSummary};
